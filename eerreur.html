@@ -11,3 +11,73 @@
 </body>
 
 </html>
+
+app.get('/get-session-data', (req, res) => {
+    const username = req.session.id || 'Not set';
+    res.send(`Username from session: ${username}`);
+});
+//lister les roles 
+app.get('/getroles', (req, res) => {
+    pool.query('SELECT * FROM roles', (error, results) => {
+        if (error) {
+            console.error(error);
+            res.status(500).send('Erreur de base de données');
+        } else {
+            res.json(results.rows);
+        }
+    });
+});
+//insertion de donnée subsances pour venant de la table substances
+app.get('/insertdonnees', (req, res) => {
+    pool.query('SELECT * FROM substances', (error, results) => {
+        if (error) {
+            console.error(error);
+            res.status(500).send('Erreur de base de données');
+        } else {
+            let stock = [];
+
+            results.rows.forEach(substance => {
+                let substancesToAdd = [];
+
+                if (substance.nom.includes(",")) {
+                    substancesToAdd = substance.nom.split(", ");
+                } else {
+                    substancesToAdd = [substance.nom];
+                }
+
+                substancesToAdd.forEach(subs => {
+                    if (!stock.includes(subs)) {
+                        stock.push(subs);
+                    }
+                });
+            });
+            var message = "pas okay";
+            stock.forEach(element1 => {
+                pool.query('INSERT INTO lessubstances (nom) VALUES ($1)', [element1], (err) => {
+                    if (err) {
+                        console.error(err);
+                        res.send('Erreur lors de l\'inscription');
+                    } else {
+                        message = "c'est okay";
+                    }
+                });
+            });
+            res.send(message);
+        }
+    });
+});
+app.get('/dashboard', (req, res) => {
+    // Vérifiez si l'utilisateur est authentifié
+    if (req.isAuthenticated()) {
+        res.send('Tableau de bord protégé');
+    } else {
+        req.flash('error', 'Accès refusé. Veuillez vous connecter.');
+        res.redirect('/login');
+    }
+});
+
+//index (login normalement)
+app.get('/', (req, res) => {
+    res.send('Hello, world!');
+});
+

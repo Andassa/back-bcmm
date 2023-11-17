@@ -10,6 +10,8 @@ const dashboard = require('./controllers/controllerDash');
 const mapPage = require('./controllers/controllerMap');
 
 const app = express();
+// app.set('view engine', 'ejs');
+
 
 
 //ajout de session après login
@@ -24,20 +26,25 @@ app.use(passport.session());
 app.use(flash());
 app.use(express.json());
 const checkAdminRole = (req, res, next) => {
-    // Vérifie si l'utilisateur est authentifié et a le rôle d'administrateur
     if (req.isAuthenticated() && req.user.autorisation === 2) {
-        // Si l'utilisateur a le rôle d'administrateur, passez à la prochaine étape
         return next();
     } else {
-        // Sinon, renvoyez une erreur ou redirigez l'utilisateur
-        res.status(403).send('Accès refusé'); // Par exemple, renvoie un statut 403 (interdit)
-        // ou
+        res.status(403).send('Accès refusé'); 
         // res.redirect('/unauthorized'); // Redirigez l'utilisateur vers une page d'autorisation refusée
+    }
+};
+const checkUserRole = (req, res, next) => {
+    if (req.isAuthenticated()) {
+        return next();
+    } else {
+        req.flash('error', 'Accès refusé. Veuillez vous connecter.');
+        res.redirect('/login');
     }
 };
 
 // Utilisation du middleware d'autorisation pour les URL commençant par "/admin"
 app.use('/admin', checkAdminRole);
+app.use('/utilisateur', checkUserRole);
 app.use('/', authentification);
 app.use('/', dashboard);
 app.use('/', mapPage);

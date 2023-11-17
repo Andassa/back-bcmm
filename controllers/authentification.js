@@ -64,7 +64,7 @@ router.post('/login', (req, res, next) => {
             if (user.autorisation === 2) {
                 return res.redirect('/admin/dashboard');
             } else if(user.autorisation === 1) {
-                return res.redirect('/map');
+                return res.redirect('/utilisateur/map');
             }
             else{
                 res.send('noope');

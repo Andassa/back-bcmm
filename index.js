@@ -5,11 +5,12 @@ const flash = require('express-flash');
 const pool = require('./database.js'); // Importez la configuration de la base de données
 // const flash = require('connect-flash');
 
-// const authentification = require('./controllers/authentification');
-
+const authentification = require('./controllers/authentification');
+const dashboard = require('./controllers/controllerDash');
+const mapPage = require('./controllers/controllerMap');
 
 const app = express();
-////////////////////////////////////////////
+
 
 //ajout de session après login
 app.use(expressSession({
@@ -22,39 +23,24 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 app.use(express.json());
-// app.use('/', authentification);
-
-app.get('/login', (req, res) => {
-    const errors = req.flash('error');
-    // Vérifiez si l'utilisateur est déjà authentifié
-    if (errors.length > 0) {
-        console.log('Erreurs de connexion :', errors);
-        res.send(errors);
+const checkAdminRole = (req, res, next) => {
+    // Vérifie si l'utilisateur est authentifié et a le rôle d'administrateur
+    if (req.isAuthenticated() && req.user.autorisation === 2) {
+        // Si l'utilisateur a le rôle d'administrateur, passez à la prochaine étape
+        return next();
     } else {
-        if (req.isAuthenticated()) {
-            res.redirect('/dashboard');
-        } else {
-            console.log('Page de connexion');
-            res.send('Page de connexion');
-        }
+        // Sinon, renvoyez une erreur ou redirigez l'utilisateur
+        res.status(403).send('Accès refusé'); // Par exemple, renvoie un statut 403 (interdit)
+        // ou
+        // res.redirect('/unauthorized'); // Redirigez l'utilisateur vers une page d'autorisation refusée
     }
-});
+};
 
-app.post('/login', passport.authenticate('local', {
-    successRedirect: '/dashboard',
-    failureRedirect: '/login',
-    failureFlash: true,
-}));
-
-app.get('/dashboard', (req, res) => {
-    // Vérifiez si l'utilisateur est authentifié
-    if (req.isAuthenticated()) {
-        res.send('Tableau de bord protégé');
-    } else {
-        req.flash('error', 'Accès refusé. Veuillez vous connecter.');
-        res.redirect('/login');
-    }
-});
+// Utilisation du middleware d'autorisation pour les URL commençant par "/admin"
+app.use('/admin', checkAdminRole);
+app.use('/', authentification);
+app.use('/', dashboard);
+app.use('/', mapPage);
 
 //lancement du serveur
 const port = process.env.PORT || 3000;

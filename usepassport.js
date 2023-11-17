@@ -20,7 +20,7 @@ passport.use(new LocalStrategy(
             bcrypt.compare(password, user.motdepasse, (err, isMatch) => {
                 if (err) return done(err);
                 if (isMatch) {
-                    return done(null, user);
+                    done(null, user);
                 } else {
                     return done(null, false, { message: 'Mot de passe incorrect.' });
                 }

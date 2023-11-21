@@ -34,26 +34,37 @@ router.post('/register', (req, res) => {
 router.get('/login', (req, res) => {
     const errors = req.flash('error');
     // Vérifiez si l'utilisateur est déjà authentifié
+
     if (errors.length > 0) {
         console.log('Erreurs de connexion :', errors);
         res.send(errors);
     } else {
         if (req.isAuthenticated()) {
-            res.redirect('/dashboard');
+            res.redirect('/admin/dashboard');
         } else {
             console.log('Page de connexion');
             res.send('Page de connexion');
         }
     }
 });
-router.post('/login', (req, res, next) => {
-    passport.authenticate('local', (err, user, info) => {
+router.post('/sendDatalogin', (req, res, next) => {
+    passport.authenticate('local', (err, user, message, info) => {
+        if (message) {
+            req.flash('error', message);
+            // return res.redirect('/login');
+            // return res.send(message);
+            const responseData = { erreur: message };
+            return res.json(responseData);
+        }
         if (err) {
             return next(err);
         }
         if (!user) {
             // Authentification échouée, redirigez vers '/login'
-            return res.redirect('/login');
+            // return res.redirect('/login');
+            // return res.send('nom d\'utilisateur ou mot de passe incorrecte');
+            const responseData = { erreur: 'nom d\'utilisateur ou mot de passe incorrecte' };
+            return res.json(responseData);
         }
         // Authentification réussie
         req.logIn(user, (err) => {
@@ -62,26 +73,28 @@ router.post('/login', (req, res, next) => {
             }
             // Condition pour déterminer la redirection en fonction du rôle
             if (user.autorisation === 2) {
-                return res.redirect('/admin/dashboard');
-            } else if(user.autorisation === 1) {
-                return res.redirect('/utilisateur/map');
+                const responseData = { valide: '/admin/dashboard' };
+                return res.json(responseData);
+            } else if (user.autorisation === 1) {
+                const responseData = { valide: '/utilisateur/map' };
+                return res.json(responseData);
             }
-            else{
-                res.send('noope');
+            else {
+                res.send('accès non autorisé');
             }
         });
     })(req, res, next);
 });
 router.get('/logout', (req, res) => {
     req.logout((err) => {
-      if (err) {
-        // Gérer l'erreur ici, si nécessaire
-        return next(err);
-      }
-      // Redirection après la déconnexion
-      res.redirect('/login');
+        if (err) {
+            // Gérer l'erreur ici, si nécessaire
+            return next(err);
+        }
+        // Redirection après la déconnexion
+        res.redirect('/login');
     });
-  });
-  
+});
+
 
 module.exports = router;

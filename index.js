@@ -4,12 +4,17 @@ const expressSession = require('express-session');
 const flash = require('express-flash');
 const pool = require('./database.js'); // Importez la configuration de la base de données
 // const flash = require('connect-flash');
+const cors = require('cors');
+
+
 
 const authentification = require('./controllers/authentification');
 const dashboard = require('./controllers/controllerDash');
 const mapPage = require('./controllers/controllerMap');
 
 const app = express();
+app.use(cors()); // Enable CORS for all routes
+
 // app.set('view engine', 'ejs');
 
 
@@ -25,12 +30,15 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 app.use(express.json());
+
 const checkAdminRole = (req, res, next) => {
     if (req.isAuthenticated() && req.user.autorisation === 2) {
         return next();
     } else {
-        res.status(403).send('Accès refusé'); 
+        // res.status(403).send('Accès refusé: veuillez vous connecté en tant q\'admin'); 
         // res.redirect('/unauthorized'); // Redirigez l'utilisateur vers une page d'autorisation refusée
+        req.flash('error', 'Accès refusé. Veuillez vous connecter en tant qu\'admin.');
+        res.redirect('/login');
     }
 };
 const checkUserRole = (req, res, next) => {

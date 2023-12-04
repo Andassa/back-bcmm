@@ -11,6 +11,7 @@ const cors = require('cors');
 const authentification = require('./controllers/authentification');
 const dashboard = require('./controllers/controllerDash');
 const mapPage = require('./controllers/controllerMap');
+const test = require('./controllers/testController');
 
 const app = express();
 app.use(cors()); // Enable CORS for all routes
@@ -35,8 +36,6 @@ const checkAdminRole = (req, res, next) => {
     if (req.isAuthenticated() && req.user.autorisation === 2) {
         return next();
     } else {
-        // res.status(403).send('Accès refusé: veuillez vous connecté en tant q\'admin'); 
-        // res.redirect('/unauthorized'); // Redirigez l'utilisateur vers une page d'autorisation refusée
         req.flash('error', 'Accès refusé. Veuillez vous connecter en tant qu\'admin.');
         res.redirect('/login');
     }
@@ -56,6 +55,7 @@ app.use('/utilisateur', checkUserRole);
 app.use('/', authentification);
 app.use('/', dashboard);
 app.use('/', mapPage);
+app.use('/', test);
 
 //lancement du serveur
 const port = process.env.PORT || 3000;

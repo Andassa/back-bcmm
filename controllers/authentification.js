@@ -51,8 +51,6 @@ router.post('/sendDatalogin', (req, res, next) => {
     passport.authenticate('local', (err, user, message, info) => {
         if (message) {
             req.flash('error', message);
-            // return res.redirect('/login');
-            // return res.send(message);
             const responseData = { erreur: message };
             return res.json(responseData);
         }
@@ -60,9 +58,6 @@ router.post('/sendDatalogin', (req, res, next) => {
             return next(err);
         }
         if (!user) {
-            // Authentification échouée, redirigez vers '/login'
-            // return res.redirect('/login');
-            // return res.send('nom d\'utilisateur ou mot de passe incorrecte');
             const responseData = { erreur: 'nom d\'utilisateur ou mot de passe incorrecte' };
             return res.json(responseData);
         }

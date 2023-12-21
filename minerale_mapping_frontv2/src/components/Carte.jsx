@@ -11,7 +11,6 @@ function MapPage() {
     <div>
       <div style={{ display: "flex", flexDirection: "row", width: "95vw", height: "100vh" }} >
         <div style={{ width: "55vw", height: "100vh" }} >
-          {/* <CarteLeaflet selectPosition={selectPosition} /> */}
           <CarteLeaflet selectPosition={selectPosition} />
         </div>
         <div style={{ width: "40vw" }} >

@@ -10,41 +10,25 @@ const icon = L.icon({
     iconSize: [40, 40]
 });
 const position = [-18.822733, 47.171147];
-function ResetCenterView(props) {
-    const { selectPosition } = props;
-    const map = useMap();
-    useEffect(() => {
-        if (selectPosition) {
-            map.setView(
-                L.latLng(selectPosition?.lat, selectPosition?.lon),
-                map.getZoom(),
-                {
-                    animate: true,
-                }
-            )
-        }
-    }, [selectPosition]);
-
-    return null;
-}
 
 const DrawMap = (props) => {
     const { selectPosition } = props;
     const locationSelection = [selectPosition?.lat, selectPosition?.lon];
 
-    const mapRef = useRef(null);
     const featureGroupRef = useRef();
 
-    useEffect(() => {
-        if (mapRef.current) {
-            const map = mapRef.current.leafletElement;
-            if (map) {
-                map.fitBounds(featureGroupRef.current.getBounds());
-            }
+    const onCreated = (e) => {
+        const type = e.layerType;
+        const layer = e.layer;
+
+        if (type === 'polygon') {
+            const coordinates = layer.getLatLngs()[0].map((latLng) => [latLng.lat, latLng.lng]);
+            console.log('Coordonnées du polygone :', coordinates);
+            console.log('Coordonnées du polygone :', coordinates[0][0]);
         }
-    }, []);
 
-
+        featureGroupRef.current.addLayer(layer);
+    };
 
     return (
         <MapContainer center={position} zoom={6.4} style={{ width: "100%", height: "100%", boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.2)' }}>
@@ -75,17 +59,16 @@ const DrawMap = (props) => {
                     edit={{
                         featureGroup: featureGroupRef.current,
                     }}
+                    onCreated={onCreated}
                 />
             </FeatureGroup>
             {selectPosition && (
-
                 <Marker position={locationSelection} icon={icon}>
                     <Popup>
                         A pretty CSS3 popup. <br /> Easily customizable.
                     </Popup>
                 </Marker>
             )}
-            <ResetCenterView selectPosition={selectPosition} />
         </MapContainer>
     );
 };

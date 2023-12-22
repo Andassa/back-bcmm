@@ -7,15 +7,16 @@ import './../App.css';
 
 function MapPage() {
   const [selectPosition, setSelectPosition] = useState(null);
+  const [coordonnees, setCoordonnees] = useState(null);
   return (
     <div>
       <div style={{ display: "flex", flexDirection: "row", width: "95vw", height: "100vh" }} >
         <div style={{ width: "55vw", height: "100vh" }} >
-          <CarteLeaflet selectPosition={selectPosition} />
+          <CarteLeaflet selectPosition={selectPosition} coordonnees={coordonnees} setCoordonnees={setCoordonnees} />
         </div>
         <div style={{ width: "40vw" }} >
           <AccordeonSearch selectPosition={selectPosition} setSelectPosition={setSelectPosition} />
-          <AccordeonCoord />
+          <AccordeonCoord coordonnees={coordonnees} />
           <ListeSubstance />
         </div>
       </div>

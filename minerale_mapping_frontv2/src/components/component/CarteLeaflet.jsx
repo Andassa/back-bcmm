@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { MapContainer, Marker, Popup, TileLayer, FeatureGroup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
@@ -12,8 +12,14 @@ const icon = L.icon({
 const position = [-18.822733, 47.171147];
 
 const DrawMap = (props) => {
+    const { coordonnees } = props;
+    const { setCoordonnees } = props;
     const { selectPosition } = props;
     const locationSelection = [selectPosition?.lat, selectPosition?.lon];
+    const [drawingEnabled, setDrawingEnabled] = useState(true);
+    const [editableLayers, setEditableLayers] = useState(null);
+    const [editingEnabled, setEditingEnabled] = useState(false);
+
 
     const featureGroupRef = useRef();
 
@@ -23,12 +29,26 @@ const DrawMap = (props) => {
 
         if (type === 'polygon') {
             const coordinates = layer.getLatLngs()[0].map((latLng) => [latLng.lat, latLng.lng]);
-            console.log('Coordonnées du polygone :', coordinates);
-            console.log('Coordonnées du polygone :', coordinates[0][0]);
+            setCoordonnees(coordinates);
         }
 
         featureGroupRef.current.addLayer(layer);
+        setDrawingEnabled(false);
+        setEditableLayers(e.layer);
+        setEditingEnabled(true);
+
     };
+    const handleOnEdited = (e) => {
+        // Obtenez les nouvelles coordonnées après l'édition
+        const newCoordinates = e.layers.getLayers()[0].getLatLngs()[0].map((latLng) => [latLng.lat, latLng.lng]);
+        setCoordonnees(newCoordinates);
+        // console.log('Nouvelles coordonnées du polygone :', newCoordinates);
+    };
+    const handleDelete =(e)=>{
+        setDrawingEnabled(true);
+        setCoordonnees([]);
+    }
+
 
     return (
         <MapContainer center={position} zoom={6.4} style={{ width: "100%", height: "100%", boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.2)' }}>
@@ -45,7 +65,7 @@ const DrawMap = (props) => {
                         circle: false,
                         marker: false,
                         circlemarker: false,
-                        polygon: {
+                        polygon: drawingEnabled ? {
                             allowIntersection: false,
                             drawError: {
                                 color: '#e1e100',
@@ -54,12 +74,17 @@ const DrawMap = (props) => {
                             shapeOptions: {
                                 color: '#97009c',
                             },
-                        },
+                        } : false,
                     }}
                     edit={{
                         featureGroup: featureGroupRef.current,
+                        // featureGroup: editableLayers,
+                        edit: editingEnabled,
+
                     }}
                     onCreated={onCreated}
+                    onEdited={handleOnEdited}
+                    onDeleted={handleDelete}
                 />
             </FeatureGroup>
             {selectPosition && (

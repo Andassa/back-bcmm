@@ -16,7 +16,6 @@ const test = require('./controllers/testController');
 const app = express();
 app.use(cors()); // Enable CORS for all routes
 
-// app.set('view engine', 'ejs');
 
 
 

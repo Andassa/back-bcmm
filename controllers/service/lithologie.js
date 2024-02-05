@@ -1,6 +1,6 @@
 //lithologie.js
 //avoir les coordonnées des couches présentants des traces de la substance recherché
-const krigeage = require('../fonction/kriging.js');
+const kriging = require('../fonction/kriging.js');
 const pool = require('../../database.js'); // Importez la configuration de la base de données
 
 const getNbCoucheLitho = async(nomSubstances)=>{
@@ -52,11 +52,27 @@ const getCoordonnées = async (codefrequence , nomSubs)=>{
         });
     });
 };
-// const getResultKrigeage = async (codefrequence , nomSubs)=>{
-
-// };
+const getResultKrigeage = async (newx,newy,donnees)=>{
+    const nombre = donnees['nombre'];
+    let x = [];
+    let y = [];
+    let pourcentages=[];
+    donnees['requetepourcentage'].forEach(donnee=>{
+        x.push(donnee['x']);
+        y.push(donnee['y']);
+        pourcentages.push((donnee['pourcentage'])*100/nombre);
+    });
+    const model = "exponential";
+	const sigma2 = 0, alpha = 100;
+	const variogram = kriging.train(pourcentages, x, y, model, sigma2, alpha);
+    const xnew = newx;
+    const ynew = newy;
+    const pourcentage_predicted = kriging.predict(xnew, ynew, variogram);
+    return pourcentage_predicted;
+};
 module.exports = {
     getCoordonnées,
     getFrequence,
-    getNbCoucheLitho
+    getNbCoucheLitho,
+    getResultKrigeage
 };

@@ -23,10 +23,6 @@ const Welcome = () => {
         </li>
         <li>
           {/* Endpoint to route to Contact Us component */}
-          <Link to="/login2">Login2</Link>
-        </li>
-        <li>
-          {/* Endpoint to route to Contact Us component */}
           <Link to="/map">Map</Link>
         </li>
       </ul>

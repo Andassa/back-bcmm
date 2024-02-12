@@ -23,7 +23,7 @@ export default function ControlledAccordions(props) {
 
   return (
     <div style={{ padding: '10px' }}>
-      <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+      <Accordion  expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1bh-content"
@@ -34,9 +34,7 @@ export default function ControlledAccordions(props) {
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography>
             <TableauCoord coordonnes={coordonnes} />
-          </Typography>
         </AccordionDetails>
       </Accordion>
     </div>

@@ -11,7 +11,7 @@ import Grid from '@mui/material/Grid';
 
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import ChoixSubs from './ChoixSubs';
+import ChoixSubs from './ModalChoixSubs';
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',

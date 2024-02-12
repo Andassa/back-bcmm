@@ -9,18 +9,23 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 
 const columns = [
-    { indice : 0,id: 'longitude', label: 'longitude', minWidth: 170 },
-    { indice : 1,id: 'latitude', label: 'latitude', minWidth: 170 },
+    {indice :0, id :'id',label :'id'},
+    { indice : 1,id: 'longitude', label: 'longitude', minWidth: 170 },
+    { indice : 2,id: 'latitude', label: 'latitude', minWidth: 170 },
 ];
 
 export default function StickyHeadTable(props) {
-    var rows = [];
+    let rows = [];
     const { coordonnes } = props;
     if (coordonnes) {
         rows = coordonnes;
     }
-    var cle = 0;
-    var indice =0;
+    var coordinatesWithId = rows.map((coords, index) => ({
+        id: index + 1, // L'ID commence à 1 (tu peux ajuster cela si nécessaire)
+        longitude: coords[0],
+        latitude: coords[1]
+    }));
+
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
@@ -32,6 +37,7 @@ export default function StickyHeadTable(props) {
         setRowsPerPage(+event.target.value);
         setPage(0);
     };
+    var cle = 0;
 
     return (
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -39,13 +45,6 @@ export default function StickyHeadTable(props) {
                 <Table stickyHeader aria-label="sticky table" >
                     <TableHead>
                         <TableRow>
-                        <TableCell
-                                    key='id'
-                                    align='left'
-                                    style={{ minWidth: '100' }}
-                                >
-                                    id
-                                </TableCell>
                             {columns.map((column) => (
                                 <TableCell
                                     key={column.id}
@@ -58,17 +57,14 @@ export default function StickyHeadTable(props) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {rows
+                        {coordinatesWithId
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((row) => {
-                                cle = cle+1;
+                                cle=cle+1;
                                 return (
                                     <TableRow hover role="checkbox" tabIndex={-1} key={cle}>
-                                        <TableCell key='id' align='right'>
-                                            {cle}
-                                        </TableCell>
                                         {columns.map((column) => {
-                                            const value = row[column.indice];
+                                            const value = row[column.id];
                                             return (
                                                 <TableCell key={column.id} align={column.align}>
                                                     {column.format && typeof value === 'number'

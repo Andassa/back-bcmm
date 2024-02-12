@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
@@ -16,7 +16,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 
 
-const subs = ['Or', 'Beryl', 'Saphir', 'Emeraude', 'Labradorite', 'Tourmaline','Or', 'Beryl', 'Saphir', 'Emeraude', 'Labradorite', 'Tourmaline','Or', 'Beryl', 'Saphir', 'Emeraude', 'Labradorite', 'Tourmaline'];
+const subs = ['Or', 'Beryl', 'Saphir', 'Emeraude', 'Labradorite', 'Tourmaline', 'talzlz', 'Beryl', 'Saphir', 'Emeraude', 'Labradorite', 'Tourmaline', 'Or', 'Beryl', 'Saphir', 'Emeraude', 'Labradorite', 'Tourmaline'];
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -36,6 +36,29 @@ export default function CustomizedDialogs() {
     const handleClose = () => {
         setOpen(false);
     };
+    const handelConfirmation = () => {
+        setOpen(false);
+    }
+
+    // Créer un état pour suivre les cases cochées
+    const [checkedItems, setCheckedItems] = useState({});
+
+    // Fonction pour gérer le changement d'état des cases cochées
+    const handleCheckboxChange = (event) => {
+        const { name, checked } = event.target;
+
+        setCheckedItems({
+            ...checkedItems,
+            [name]: checked,
+        });
+        console.log(name);
+    };
+    const handleGetCheckedItems = () => {
+        const checked = Object.keys(checkedItems).filter((item) => checkedItems[item]);
+        console.log('Éléments cochés :', checked);
+    };
+    var indice = 0;
+
 
     return (
         <React.Fragment>
@@ -46,6 +69,7 @@ export default function CustomizedDialogs() {
                 onClose={handleClose}
                 aria-labelledby="customized-dialog-title"
                 open={open}
+                maxWidth="md"
             >
                 <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
                     séléctionner d'autres substances à ajouter
@@ -63,18 +87,24 @@ export default function CustomizedDialogs() {
                     <CloseIcon />
                 </IconButton>
                 <DialogContent dividers>
-                    <Box sx={{ flexGrow: 1 }} style={{ height: '250px', overflowY: 'scroll', }}>
-                        <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-                            {subs.map((sub) => (
-                                <Grid item xs={1} sm={3} md={4} key={sub}>
-                                    <FormControlLabel control={<Checkbox />} label={sub} />
+                    <Box sx={{ flexGrow: 1 }} style={{ height: '500px', overflowY: 'scroll', }}>
+                        <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md:16 }}>
+                            {
+                            subs.map((sub) => (
+                                <Grid item xs={1} sm={3} md={4} key={indice}>
+                                    <FormControlLabel control={<Checkbox
+                                        checked={checkedItems[sub] || false} // Vérifier si la case est cochée
+                                        onChange={handleCheckboxChange}
+                                        name={sub} // Utiliser la valeur unique de chaque case comme nom
+                                    />} label={sub} />
                                 </Grid>
+                                
                             ))}
                         </Grid>
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button autoFocus onClick={handleClose}>
+                    <Button autoFocus onClick={handelConfirmation}>
                         confirmer
                     </Button>
                 </DialogActions>

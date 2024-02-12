@@ -9,6 +9,23 @@ const icon = L.icon({
     iconUrl: "./location.png",
     iconSize: [40, 40]
 });
+function ResetCenterView(props) {
+    const { selectPosition } = props;
+    const map = useMap();
+    useEffect(() => {
+        if (selectPosition) {
+            map.setView(
+                L.latLng(selectPosition?.lat, selectPosition?.lon),
+                map.getZoom(),
+                {
+                    animate: true,
+                }
+            )
+        }
+    }, [selectPosition]);
+
+    return null;
+}
 const position = [-18.822733, 47.171147];
 
 const DrawMap = (props) => {
@@ -44,7 +61,7 @@ const DrawMap = (props) => {
         setCoordonnees(newCoordinates);
         // console.log('Nouvelles coordonnées du polygone :', newCoordinates);
     };
-    const handleDelete =(e)=>{
+    const handleDelete = (e) => {
         setDrawingEnabled(true);
         setCoordonnees([]);
     }
@@ -94,6 +111,7 @@ const DrawMap = (props) => {
                     </Popup>
                 </Marker>
             )}
+            <ResetCenterView selectPosition={selectPosition} />
         </MapContainer>
     );
 };

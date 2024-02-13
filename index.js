@@ -1,11 +1,13 @@
 const express = require('express');
-const passport = require('./usepassport.js'); // Importez la configuration de la base de données
 const expressSession = require('express-session');
+const passport = require('./usepassport.js'); // Importez la configuration de la base de données
 const flash = require('express-flash');
 const pool = require('./database.js'); // Importez la configuration de la base de données
 // const flash = require('connect-flash');
 const cors = require('cors');
 
+const app = express();
+app.use(express.json());
 
 
 const authentification = require('./controllers/authentification');
@@ -13,7 +15,6 @@ const dashboard = require('./controllers/controllerDash');
 const mapPage = require('./controllers/controllerMap');
 const test = require('./controllers/testController');
 
-const app = express();
 app.use(cors()); // Enable CORS for all routes
 
 
@@ -29,7 +30,6 @@ app.use(expressSession({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
-app.use(express.json());
 
 const checkAdminRole = (req, res, next) => {
     if (req.isAuthenticated() && req.user.autorisation === 2) {

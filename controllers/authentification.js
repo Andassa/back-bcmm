@@ -35,14 +35,14 @@ router.get('/login', (req, res) => {
     const errors = req.flash('error');
     // Vérifiez si l'utilisateur est déjà authentifié
 
-    if (errors.length > 0) {
-        console.log('Erreurs de connexion :', errors);
-        res.send(errors);
+    if (errors.length>0) {
+        console.log('Erreurs de connexion :', errors.length);
+        res.send(errors[0]);
     } else {
         if (req.isAuthenticated()) {
             res.redirect('/admin/dashboard');
         } else {
-            console.log('Page de connexion');
+            console.log(errors.length);
             res.send('Page de connexion');
         }
     }
@@ -68,11 +68,13 @@ router.post('/sendDatalogin', (req, res, next) => {
             }
             // Condition pour déterminer la redirection en fonction du rôle
             if (user.autorisation === 2) {
-                const responseData = { valide: '/admin/dashboard' };
-                return res.json(responseData);
+                // const responseData = { valide: '/admin/dashboard',user:user };
+                // return res.json(responseData);
+                res.redirect('/admin/dashboard');
             } else if (user.autorisation === 1) {
-                const responseData = { valide: '/utilisateur/map' };
-                return res.json(responseData);
+                // const responseData = { valide: '/utilisateur/map', user:user };
+                // return res.json(responseData);
+                res.redirect('/utilisateur/map');
             }
             else {
                 res.send('accès non autorisé');
@@ -80,6 +82,9 @@ router.post('/sendDatalogin', (req, res, next) => {
         });
     })(req, res, next);
 });
+router.get('/getuserAuthenticated',(req,res)=>{
+    return res.json({user: req.user});
+})
 router.get('/logout', (req, res) => {
     req.logout((err) => {
         if (err) {

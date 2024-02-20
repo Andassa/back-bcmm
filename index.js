@@ -1,10 +1,10 @@
+const cors = require('cors');
 const express = require('express');
 const expressSession = require('express-session');
 const passport = require('./usepassport.js'); // Importez la configuration de la base de données
 const flash = require('express-flash');
 const pool = require('./database.js'); // Importez la configuration de la base de données
 // const flash = require('connect-flash');
-const cors = require('cors');
 
 const app = express();
 app.use(express.json());
@@ -15,7 +15,16 @@ const dashboard = require('./controllers/controllerDash');
 const mapPage = require('./controllers/controllerMap');
 const test = require('./controllers/testController');
 
-app.use(cors()); // Enable CORS for all routes
+// app.use(cors()); // Enable CORS for all routes
+app.use(cors({
+    origin: 'http://localhost:3001',
+    methods: 'GET,POST,PUT,DELETE',
+    allowedHeaders: 'Content-Type,Authorization',
+    credentials: true
+
+}));
+app.options('*', cors());
+
 
 
 
@@ -34,17 +43,21 @@ app.use(flash());
 const checkAdminRole = (req, res, next) => {
     if (req.isAuthenticated() && req.user.autorisation === 2) {
         return next();
+        // return res.json('connecté en tant que admin')
     } else {
-        req.flash('error', 'Accès refusé. Veuillez vous connecter en tant qu\'admin.');
-        res.redirect('/login');
+        // req.flash('error', 'Accès refusé. Veuillez vous connecter en tant qu\'admin.');
+        // res.redirect('/login');
+        return res.json({erreur : 'Accès refusé. Veuillez vous connecter en tant qu\'admin.'});
     }
 };
 const checkUserRole = (req, res, next) => {
     if (req.isAuthenticated()) {
         return next();
+        // return res.json('connecté en tant utilisateur');
     } else {
-        req.flash('error', 'Accès refusé. Veuillez vous connecter.');
-        res.redirect('/login');
+        // req.flash('error', 'Accès refusé. Veuillez vous connecter.');
+        // res.redirect('/login');
+        return res.json({erreur :'Accès refusé. Veuillez vous connecter.'})
     }
 };
 

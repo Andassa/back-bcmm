@@ -16,7 +16,7 @@ router.get('/utilisateur/map', (req, res) => {
                 substances: substances,
                 user: utilisateur
             };
-            res.json(responseData); // Renvoyer la réponse au client avec les données
+             return res.json(responseData); // Renvoyer la réponse au client avec les données
         }
     });
 });

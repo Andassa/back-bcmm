@@ -37,13 +37,13 @@ router.get('/login', (req, res) => {
 
     if (errors.length>0) {
         console.log('Erreurs de connexion :', errors.length);
-        res.send(errors[0]);
+        res.json(errors);
     } else {
         if (req.isAuthenticated()) {
             res.redirect('/admin/dashboard');
         } else {
             console.log(errors.length);
-            res.send('Page de connexion');
+            res.json('Page de connexion');
         }
     }
 });

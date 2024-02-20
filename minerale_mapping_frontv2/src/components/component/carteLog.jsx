@@ -7,8 +7,8 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
+import axiosInstance from '../../Lesmomdules/axiosInstance';
 
-import axios from 'axios';
 
 export default function ImgMediaCard() {
     let navigate = useNavigate();
@@ -26,20 +26,36 @@ export default function ImgMediaCard() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:3000/sendDatalogin', formData);
+            const response = await axiosInstance.post('http://localhost:3000/sendDatalogin', formData);
             if (response.data.hasOwnProperty('erreur')) {
                 setMessageErreur(response.data.erreur.message);
             } else {
                 if (!response.data.hasOwnProperty('user')) {
                     setMessageErreur(response.data);
                 }
-                navigate('/map');
-                console.log(response.data)
+                // console.log(response.data);
+                window.location.href = '/map';
             }
         } catch (error) {
             console.error('Error sending form data:', error);
         }
     };
+    const testboutton = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axiosInstance.get('http://localhost:3000/getuserAuthenticated');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const jsonData = await response.data;
+            console.log(jsonData);
+            console.log('jsonData');
+        } catch (error) {
+            // Gestion des erreurs
+            console.error('Erreur lors de la requête GET :', error);
+        }
+    }    
+    
     return (
         <Card sx={{ maxWidth: 500, alignItems: 'center', padding: '20px' }}>
             <Typography variant="h3" gutterBottom style={{ color: 'rgb(43, 102, 147)', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '50px' }} >
@@ -66,9 +82,9 @@ export default function ImgMediaCard() {
                 </Typography>
                 <Button type="submit" variant="contained" style={{ float: 'right' }}>se connecter</Button>
             </form>
-                <CardActions>
-                    <Button size="small" >mot de passe oublié</Button>
-                </CardActions>
+            <CardActions>
+                <Button size="small" onClick={testboutton} >mot de passe oublié</Button>
+            </CardActions>
         </Card>
     );
 }

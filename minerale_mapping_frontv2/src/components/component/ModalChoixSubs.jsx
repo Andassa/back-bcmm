@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
@@ -9,14 +9,12 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded';
 import Box from '@mui/material/Box';
+import axiosInstance from '../../Lesmomdules/axiosInstance';
 
 import Grid from '@mui/material/Grid';
 
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-
-
-const subs = ['Or', 'Beryl', 'Saphir', 'Emeraude', 'Labradorite', 'Tourmaline', 'talzlz', 'Beryl', 'Saphir', 'Emeraude', 'Labradorite', 'Tourmaline', 'Or', 'Beryl', 'Saphir', 'Emeraude', 'Labradorite', 'Tourmaline'];
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -27,8 +25,9 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
 }));
 
-export default function CustomizedDialogs() {
+export default function CustomizedDialogs(props) {
     const [open, setOpen] = React.useState(false);
+    const {setSelectChoixSubs } = props;
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -36,9 +35,7 @@ export default function CustomizedDialogs() {
     const handleClose = () => {
         setOpen(false);
     };
-    const handelConfirmation = () => {
-        setOpen(false);
-    }
+
 
     // Créer un état pour suivre les cases cochées
     const [checkedItems, setCheckedItems] = useState({});
@@ -51,15 +48,34 @@ export default function CustomizedDialogs() {
             ...checkedItems,
             [name]: checked,
         });
-        console.log(name);
     };
-    const handleGetCheckedItems = () => {
-        const checked = Object.keys(checkedItems).filter((item) => checkedItems[item]);
-        console.log('Éléments cochés :', checked);
-    };
-    var indice = 0;
+    const [subs1, setSubs1] = useState(null);
+    useEffect(() => {
+        // Fonction pour effectuer la requête GET
+        const fetchData = async () => {
+            try {
+                const response = await axiosInstance.get('http://localhost:3000/utilisateur/map');
+                setSubs1(response.data.substances);
 
+            } catch (error) {
+                console.error('Erreur lors de la requête GET :', error);
+            }
+        };
+        fetchData();
+    }, []); // Le tableau vide en tant que deuxième argument assure que cette effect est exécutée une seule fois après le rendu initial.
 
+    let coche = [];
+    const handelConfirmation = () => {
+        const checkedList = Object.keys(checkedItems).filter(key => checkedItems[key]);
+        console.log(checkedList[0]);
+        checkedList.forEach(checkedItem =>
+            coche.push(subs1.filter(item => item.id == checkedItem)[0])
+        )
+        if(coche.length==checkedList.length){
+            setSelectChoixSubs(coche);
+        }
+        setOpen(false);
+    }
     return (
         <React.Fragment>
             <Button size='small' onClick={handleClickOpen}>
@@ -88,17 +104,16 @@ export default function CustomizedDialogs() {
                 </IconButton>
                 <DialogContent dividers>
                     <Box sx={{ flexGrow: 1 }} style={{ height: '500px', overflowY: 'scroll', }}>
-                        <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md:16 }}>
-                            {
-                            subs.map((sub) => (
-                                <Grid item xs={1} sm={3} md={4} key={indice}>
-                                    <FormControlLabel control={<Checkbox
-                                        checked={checkedItems[sub] || false} // Vérifier si la case est cochée
-                                        onChange={handleCheckboxChange}
-                                        name={sub} // Utiliser la valeur unique de chaque case comme nom
-                                    />} label={sub} />
+                        <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 16 }}>
+                            {subs1 && subs1.map((sub) => (
+                                <Grid item xs={1} sm={3} md={4} key={sub.id}>
+                                    <FormControlLabel control={
+                                        <Checkbox
+                                            checked={checkedItems.hasOwnProperty(sub.id) ? checkedItems[sub.id] : false}  // Vérifier si la case est cochée
+                                            onChange={handleCheckboxChange}
+                                            name={sub.id.toString()} // Utiliser la valeur unique de chaque case comme nom
+                                        />} label={sub.nom} />
                                 </Grid>
-                                
                             ))}
                         </Grid>
                     </Box>

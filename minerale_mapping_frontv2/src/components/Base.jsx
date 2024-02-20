@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useState } from 'react';
 import Footer from './component/footer';
 import Carte from './Carte';
 import PropTypes from 'prop-types';
@@ -18,6 +18,7 @@ import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import logo from '../assets/images/bcmm.png';
+import axiosInstance from '../Lesmomdules/axiosInstance';
 
 const pages = ['Ajout de donnée'];
 const settings = ['Profile', 'Logout'];
@@ -46,7 +47,7 @@ HideOnScroll.propTypes = {
 };
 
 export default function HideAppBar(props) {
-    const [subs, setSubs] = useState(null);
+    
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -64,28 +65,7 @@ export default function HideAppBar(props) {
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
     };
-
-    const [data, setData] = useState(null);
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch('http://localhost:3000/utilisateur/map', { withCredentials: true });
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const jsonData = await response.json();
-                setData(jsonData);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-
-        fetchData();
-    }, []);
-    if(data!=null){
-        // console.log(data.substances[1]);
-        setSubs(data)
-    }
+    
     return (
         <React.Fragment>
             <CssBaseline />
@@ -179,7 +159,7 @@ export default function HideAppBar(props) {
             <Toolbar />
             <Container sx={{ mx: 0, ml: 0 }} style={{ marginTop: '10px' }}>
                 <Box sx={{ my: 1 }}>
-                    <Carte listeSubs={subs} />
+                    <Carte />
                 </Box>
             </Container>
             <Footer />

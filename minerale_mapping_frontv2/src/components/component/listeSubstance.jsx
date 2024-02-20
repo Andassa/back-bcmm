@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -20,10 +20,8 @@ const Item = styled(Paper)(({ theme }) => ({
     textAlign: 'center',
     color: theme.palette.text.secondary,
 }));
-const subs = ['Or', 'Beryl', 'Saphir', 'Emeraude',];
-
-
 export default function OutlinedCard() {
+    const [selectChoixSubs, setSelectChoixSubs ] = useState(null);
     return (
         <Box sx={{ minWidth: 275, padding: '10px' }}>
             <Card variant="outlined">
@@ -36,15 +34,15 @@ export default function OutlinedCard() {
                     </CardContent>
                     <Box sx={{ flexGrow: 1 }}style={{height: '250px', overflowY: 'scroll',}}>
                         <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-                            {subs.map((sub) => (
-                                <Grid item xs={1} sm={3} md={4} key={sub}>
-                                    <Item><FormControlLabel control={<Checkbox defaultChecked />} label={sub} /></Item>
+                            {selectChoixSubs && selectChoixSubs.map((sub) => (
+                                <Grid item xs={1} sm={3} md={4} key={sub.id}>
+                                    <Item><FormControlLabel control={<Checkbox defaultChecked />} label={sub.nom} /></Item>
                                 </Grid>
                             ))}
                         </Grid>
                     </Box>
                     <CardActions>
-                        <ChoixSubs />
+                        <ChoixSubs selectChoixSubs={selectChoixSubs} setSelectChoixSubs={setSelectChoixSubs} />
                     </CardActions>
                 </React.Fragment>
             </Card>

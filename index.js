@@ -14,6 +14,7 @@ const authentification = require('./controllers/authentification');
 const dashboard = require('./controllers/controllerDash');
 const mapPage = require('./controllers/controllerMap');
 const test = require('./controllers/testController');
+const grid = require('./controllers/gridController');
 
 // app.use(cors()); // Enable CORS for all routes
 app.use(cors({
@@ -68,6 +69,7 @@ app.use('/', authentification);
 app.use('/', dashboard);
 app.use('/', mapPage);
 app.use('/', test);
+app.use('/', grid);
 
 //lancement du serveur
 const port = process.env.PORT || 3000;

@@ -19,6 +19,7 @@ export default function StickyHeadTable(props) {
     const { coordonnes } = props;
     if (coordonnes) {
         rows = coordonnes;
+        console.log(rows);
     }
     var coordinatesWithId = rows.map((coords, index) => ({
         id: index + 1, // L'ID commence à 1 (tu peux ajuster cela si nécessaire)

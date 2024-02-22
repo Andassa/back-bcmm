@@ -17,6 +17,7 @@ function MapPage() {
         </div>
         <div style={{ width: "40vw", height: '100vh', overflowY: 'scroll', }} >
           <AccordeonSearch selectPosition={selectPosition} setSelectPosition={setSelectPosition} />
+          <AccordeonSearch selectPosition={selectPosition} setSelectPosition={setSelectPosition} />
           <AccordeonCoord coordonnees={coordonnees} />
           <ListeSubstance />
         </div>

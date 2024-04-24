@@ -4,10 +4,12 @@ const expressSession = require('express-session');
 const passport = require('./usepassport.js'); // Importez la configuration de la base de données
 const flash = require('express-flash');
 const pool = require('./database.js'); // Importez la configuration de la base de données
+const bodyParser = require('body-parser');
 // const flash = require('connect-flash');
 
 const app = express();
 app.use(express.json());
+app.use(bodyParser.json());
 
 
 const authentification = require('./controllers/authentification');
@@ -15,6 +17,11 @@ const dashboard = require('./controllers/controllerDash');
 const mapPage = require('./controllers/controllerMap');
 const test = require('./controllers/testController');
 const grid = require('./controllers/gridController');
+const permis = require('./controllers/permisController');
+const lithology = require('./controllers/lithologyController');
+const decoupe = require('./controllers/DecoupeController');
+const demande = require('./controllers/DemandeController');
+const carre = require('./controllers/CarreController');
 
 // app.use(cors()); // Enable CORS for all routes
 app.use(cors({
@@ -25,10 +32,6 @@ app.use(cors({
 
 }));
 app.options('*', cors());
-
-
-
-
 
 //ajout de session après login
 app.use(expressSession({
@@ -70,6 +73,11 @@ app.use('/', dashboard);
 app.use('/', mapPage);
 app.use('/', test);
 app.use('/', grid);
+app.use('/', permis);
+app.use('/', lithology);
+app.use('/', decoupe);
+app.use('/', demande);
+app.use('/', carre);
 
 //lancement du serveur
 const port = process.env.PORT || 3000;

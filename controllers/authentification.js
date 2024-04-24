@@ -82,8 +82,13 @@ router.post('/sendDatalogin', (req, res, next) => {
         });
     })(req, res, next);
 });
-router.get('/getuserAuthenticated',(req,res)=>{
-    return res.json({user: req.user});
+router.get('/getSession',(req,res)=>{
+    if (req.user) {
+        return res.json({user: req.user});
+    }
+    else{
+        return res.json({erreur: 'veuillez vous connecter'});
+    }
 })
 router.get('/logout', (req, res) => {
     req.logout((err) => {

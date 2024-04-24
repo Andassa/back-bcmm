@@ -25,6 +25,16 @@ CREATE TABLE lessubstances (
     id serial not null PRIMARY key,
     nom VARCHAR(500)
 );
+Create table typePermis (
+    id serial not null Primary key,
+    libelle varchar (50)
+);
+
+create table personne_societe(
+    id serial not null PRIMARY KEY,
+    registre_1 VARCHAR(100),
+    registre_2 VARCHAR(50)
+);
 
 CREATE OR REPLACE FUNCTION get_couches_subs(nom_substance VARCHAR) 
 RETURNS SETOF geometry AS 

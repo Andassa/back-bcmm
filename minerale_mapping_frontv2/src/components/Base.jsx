@@ -1,5 +1,4 @@
-import React, {useState } from 'react';
-import Footer from './component/footer';
+import React, { useState, useEffect } from 'react';
 import Carte from './Carte';
 import PropTypes from 'prop-types';
 import AppBar from '@mui/material/AppBar';
@@ -46,8 +45,9 @@ HideOnScroll.propTypes = {
     window: PropTypes.func,
 };
 
+
 export default function HideAppBar(props) {
-    
+
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -65,7 +65,26 @@ export default function HideAppBar(props) {
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
     };
-    
+    const [utilisateur, setUtilisateur] = useState(null);
+    useEffect(() => {
+        // Fonction pour effectuer la requête GET
+        const fetchData = async () => {
+            try {
+                const response = await axiosInstance.get('http://localhost:3000/getSession');
+                if (response.data.hasOwnProperty('user')) {
+                    setUtilisateur(response.data.user);
+                }
+                else{
+                    window.location.href = '/login';
+                }
+
+            } catch (error) {
+                console.error('Erreur lors de la requête GET :', error);
+            }
+        };
+        fetchData();
+    }, []);
+
     return (
         <React.Fragment>
             <CssBaseline />
@@ -126,7 +145,7 @@ export default function HideAppBar(props) {
                             <Box sx={{ flexGrow: 0 }}>
                                 <Tooltip title="Open settings">
                                     <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                        <Avatar alt="Anja" src='assets/images/user.png' />
+                                        <Avatar alt={utilisateur?.nom + ' '+ utilisateur?.prenom} src='assets/images/user.png' />
                                     </IconButton>
                                 </Tooltip>
                                 <Menu
@@ -145,6 +164,13 @@ export default function HideAppBar(props) {
                                     open={Boolean(anchorElUser)}
                                     onClose={handleCloseUserMenu}
                                 >
+                                    <div style={{ padding: '5px' }}>
+                                        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }} >
+                                            <Avatar alt={utilisateur?.nom + ' '+ utilisateur?.prenom} src='assets/images/user.png' />
+                                        </div>
+                                        <p style={{fontFamily:'Merriweather'}} >{utilisateur?.nom + ' '+ utilisateur?.prenom}</p>
+                                    </div>
+                                    <hr />
                                     {settings.map((setting) => (
                                         <MenuItem key={setting} onClick={handleCloseUserMenu}>
                                             <Typography textAlign="center">{setting}</Typography>
@@ -157,12 +183,11 @@ export default function HideAppBar(props) {
                 </AppBar>
             </HideOnScroll>
             <Toolbar />
-            <Container sx={{ mx: 0, ml: 0 }} style={{ marginTop: '10px' }}>
+            <Container sx={{ mx: 0, ml: 0 }} style={{ marginTop: '15px' }}>
                 <Box sx={{ my: 1 }}>
                     <Carte />
                 </Box>
             </Container>
-            <Footer />
         </React.Fragment>
     );
 }

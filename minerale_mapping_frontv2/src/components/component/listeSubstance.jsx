@@ -32,7 +32,7 @@ export default function OutlinedCard() {
                         </Typography>
 
                     </CardContent>
-                    <Box sx={{ flexGrow: 1 }}style={{height: '250px', overflowY: 'scroll',}}>
+                    <Box sx={{ flexGrow: 1 }}style={{height: '230px', overflowY: 'scroll',}}>
                         <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
                             {selectChoixSubs && selectChoixSubs.map((sub) => (
                                 <Grid item xs={1} sm={3} md={4} key={sub.id}>

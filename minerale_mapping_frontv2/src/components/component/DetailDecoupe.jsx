@@ -18,6 +18,12 @@ export default function AccessibleTable(props) {
         // setFormData({ ...formData, 'indicatif': indicatif, 'nom': nom });
         setChoixAffiche([{ 'indicatif': indicatif, 'nom': nom }]);
     }
+    useEffect(()=>{
+        const resultatsVrais = selectDecoupe.filter(function (element) {
+            return element.selectionne === 'true';
+        });
+        setChoixAffiche(resultatsVrais);
+    },[selectDecoupe]);
     async function showAllCarte() {
         // setChoixAffiche([...selectDecoupe]);
         const resultatsVrais = selectDecoupe.filter(function (element) {

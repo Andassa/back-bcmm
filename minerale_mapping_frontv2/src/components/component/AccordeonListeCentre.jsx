@@ -8,45 +8,61 @@ import Papa from 'papaparse';
 import TableauDetailCarre from './TableauDetailCarre';
 import Button from '@mui/material/Button';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
+import Alert from '@mui/material/Alert';
+import Stack from '@mui/material/Stack';
+
 
 
 export default function ControlledAccordions(props) {
   const [expanded, setExpanded] = React.useState(false);
-  const [autorisation, setAutorisation]= useState(null);
+  const [autorisation, setAutorisation] = useState(null);
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
-  const {setCarreSelect} = props;
+  const { setCarreSelect } = props;
   const { listeCentre } = props;
   const { setListeCentre } = props;
+  const { decoupeAffiche } = props;
 
+  useEffect(() => {
+    if (decoupeAffiche.length != 0) {
+      setAutorisation(true);
+    }else{
+      setCarreSelect([]);
+      setListeCentre([]); 
+      setAutorisation(false);
+    }
+  }, [decoupeAffiche])
+  const handleError = (event)=>{ setAutorisation(false); }
   const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      const text = e.target.result;
-      Papa.parse(text, {
-        complete: (result) => {
-          const jsonArray = result.data;
-          let stock = [];
-          for (let i = 1; i < jsonArray.length - 1; i++) {
-            let coords = [];
-            let coord = { [jsonArray[0][0]]: jsonArray[i][0] };
-            for (let index = 1; index < jsonArray[i].length; index++) {
-              let add = jsonArray[i][index];
-              coord = { ...coord, [jsonArray[0][index]]: add };
+    if (autorisation === true) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target.result;
+        Papa.parse(text, {
+          complete: (result) => {
+            const jsonArray = result.data;
+            let stock = [];
+            for (let i = 1; i < jsonArray.length - 1; i++) {
+              let coords = [];
+              let coord = { [jsonArray[0][0]]: jsonArray[i][0] };
+              for (let index = 1; index < jsonArray[i].length; index++) {
+                let add = jsonArray[i][index];
+                coord = { ...coord, [jsonArray[0][index]]: add };
+              }
+              coords.push(coord);
+              stock.push(coords[0]);
             }
-            coords.push(coord);
-            // console.log(coords);
-            stock.push(coords[0]);
+            setListeCentre(stock);
           }
-          setListeCentre(stock);
-        }
-      });
-    };
+        });
+      };
+      reader.readAsText(file);
+    } else {
+      setAutorisation(false);
+    }
 
-    reader.readAsText(file);
   };
 
   return (
@@ -72,12 +88,31 @@ export default function ControlledAccordions(props) {
             startIcon={<FileUploadIcon />}
           >
             Sélectionner un fichier CSV
-            <input
-              type="file"
-              onChange={handleFileUpload} // Appel de la fonction pour gérer le fichier sélectionné
-              style={{ display: 'none' }}
-            />
+
+            {autorisation ? (
+              <input
+                type="file"
+                onChange={handleFileUpload}
+                style={{ display: 'none' }}
+              />
+            ) : (
+              <input
+                type="text"
+                onClick={handleError}
+                style={{ display: 'none' }}
+              />
+            )}
+
           </Button>
+          {autorisation === false ? (
+            <Stack sx={{ width: '100%' }} spacing={2}>
+              <Alert variant="outlined" severity="error">
+                veuillez séléctionner une carte 1/100.000 d'abord
+              </Alert>
+            </Stack>
+          ) : (
+            <p></p>
+          )}
           <TableauDetailCarre listeCentre={listeCentre} setCarreSelect={setCarreSelect} />
         </AccordionDetails  >
       </Accordion>

@@ -21,7 +21,7 @@ function MapPage() {
   const [decoupeAffiche, setDecoupeAffiche] = useState([]);
   const [listeCentre, setListeCentre] = useState([]);
   const [listeCarre, setListeCarre] = useState([]);
-  const [carreSelect , setCarreSelect ]= useState([]);
+  const [carreSelect, setCarreSelect] = useState([]);
 
   useEffect(() => {
     if (selectDecoupe && listeCentre) {
@@ -43,7 +43,8 @@ function MapPage() {
             return response.json();
           })
           .then(data => {
-            setListeCarre(data)
+            console.log(data);
+            setListeCarre(data);
           })
           .catch(error => {
             console.error('Erreur :', error);
@@ -72,7 +73,7 @@ function MapPage() {
             </div>
           </div>
           <AccordeonDetailDecoupe selectDecoupe={selectDecoupe} setSelectDecoupe={setSelectDecoupe} setDecoupeAffiche={setDecoupeAffiche} />
-          <AccordeonListeCentre listeCentre={listeCentre} setListeCentre={setListeCentre} setCarreSelect={setCarreSelect} />
+          <AccordeonListeCentre listeCentre={listeCentre} setListeCentre={setListeCentre} setCarreSelect={setCarreSelect} decoupeAffiche={decoupeAffiche} />
           <ListeSubstance />
         </div>
       </div>

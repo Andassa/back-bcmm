@@ -46,30 +46,40 @@ const DrawMap = (props) => {
     const { listeCarre } = props;
     const [dessinCarre, setDessinCarre] = useState([]);
     const [dessinCarreSelect, setDessinCarreSelect] = useState([]);
+    const [dessionHorsDecoupe , setDessinHorsDecoupe] = useState([]);
 
     const [coordPolygone, setCoordPolygone] = useState(null);
     // Le style du polygone
     const polygonOptions = {
-        color: 'blue', // Couleur du polygone
+        color: 'purple', // Couleur du polygone
         fillColor: 'blue', // Couleur de remplissage
         fillOpacity: 0.1, // Opacité de remplissage
     };
     const dessinCarreOption = {
-        color: 'purple',
+        color: 'blue',
         fillcolor: 'blue',
         fillOpacity: 0.2,
     }
     const dessinCarreSelectOption = {
+        color: 'blue',
+        fillOpacity: 0.5
+    }
+    const dessinCarreErrorOption = {
         color: 'red',
+        fillcolor: 'red',
         fillOpacity: 0.2
     }
+
+
+    ////////26-04-2024  eto ooohhhhhhhhhhh/////////////
+    
     // s'il y a des decoupes à afficher ou s'il y a des changements au niveau de decoupe Affiche 
     useEffect(() => {
         if (decoupeAffiche.length !== 0) {
             let coords = [];
             decoupeAffiche.forEach(element => {
                 coords.push(element['st_asgeojson']['coordinates']);
-            });
+            });                                                                                                                                              
             setCoordPolygone(coords);
         }
         else {
@@ -78,8 +88,14 @@ const DrawMap = (props) => {
     }, [decoupeAffiche]);
     // après l'import de liste de centre, il se transforment en carrées qui s'affiche ici 
     useEffect(() => {
-        if (listeCarre.length > 0) {
-            setDessinCarre(listeCarre);
+        if (listeCarre.length>0) {
+            // console.log(listeCarre);
+            let listIn = [];
+            listeCarre[0]['inDecoupe'].forEach(element => {
+                console.log(element['coord']);
+                listIn.push(element['coord']);
+            });
+            setDessinCarre(listIn);
         }
     }, [listeCarre]);
     useEffect(() => {
@@ -144,6 +160,7 @@ const DrawMap = (props) => {
             {coordPolygone != null && (<Polygon positions={coordPolygone} pathOptions={polygonOptions} />)}
             {dessinCarre != null && (<Polygon positions={dessinCarre} pathOptions={dessinCarreOption} />)}
             {dessinCarreSelect != null && (<Polygon positions={dessinCarreSelect} pathOptions={dessinCarreSelectOption} />)}
+            {dessionHorsDecoupe != null && (<Polygon positions={dessionHorsDecoupe} pathOptions={dessinCarreErrorOption} />)}
 
             <FeatureGroup ref={featureGroupRef}>
                 <EditControl

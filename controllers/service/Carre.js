@@ -5,8 +5,8 @@ const Decimal = require('decimal.js');
 
 const createCarre = async (centre) => {
     return new Promise((resolve, reject) => {
-        // const cote = 0.0060222696819922945;
-        const cote = new Decimal('0.005650');
+        const long = new Decimal('0.005953705322626733');
+        const larg = new Decimal('0.005649108528689231');
 
         const listeCarre = [];
         let a = [];
@@ -14,30 +14,99 @@ const createCarre = async (centre) => {
         let b = [];
         let d = [];
         let carre = [];
-        
+
         try {
             centre.forEach(element => {
                 const lat = new Decimal(element['lat']);
                 const lng = new Decimal(element['lng']);
-    
-                a = [lat.minus(cote.dividedBy(2)), lng.plus(cote.dividedBy(2))];
-                c = [lat.plus(cote.dividedBy(2)), lng.minus(cote.dividedBy(2))];
-                b = [lat.plus(cote.dividedBy(2)), lng.plus(cote.dividedBy(2))];
-                d = [lat.minus(cote.dividedBy(2)), lng.minus(cote.dividedBy(2))];
+
+                a = [lat.minus(larg.dividedBy(2)), lng.plus(long.dividedBy(2))];
+                c = [lat.plus(larg.dividedBy(2)), lng.minus(long.dividedBy(2))];
+                b = [lat.plus(larg.dividedBy(2)), lng.plus(long.dividedBy(2))];
+                d = [lat.minus(larg.dividedBy(2)), lng.minus(long.dividedBy(2))];
                 carre = [a, b, c, d];
                 listeCarre.push(carre);
             });
         } catch (error) {
             console.log(error);
         }
-        
-
-
         resolve(listeCarre);
+    });
+}
+const verifCarreDecoupe = async (uncentre, decoupes) => {
+    return new Promise((resolve, reject) => {
+        let requete = "select case ";
+        decoupes.forEach(decoupe => {
+            requete = requete + "when ST_Contains( (select ST_SetSRID(geom, 4326) from decoupe_cent where indicatif ='" + decoupe['indicatif'] + "'),ST_GeomFromText('POINT(" + uncentre['lng'] + " " + uncentre['lat'] + ")', 4326)) then 0 ";
+        });
+        requete = requete + " else 1 end as dansdecoupe ;"
+        try {
+            pool.query(requete, (error, resultat) => {
+                if (error) {
+                    console.log(error);
+                    reject('erreur base de données');
+                } else {
+                    const result = { ...uncentre, etat: resultat.rows[0].dansdecoupe };
+                    resolve(result);
+                }
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    });
+}
+const listeCarre = async (centres, decoupes) => {
+    return new Promise((resolve, reject) => {
+        let listeCarreInOut = [];
+        let dessinCarre = [];
+        try {
+            let promises = [];
+            for (let i = 0; i < centres.length; i++) {
+                promises.push(
+                    verifCarreDecoupe(centres[i], decoupes)
+                        .then(resulte => {
+                            listeCarreInOut.push(resulte);
+                        })
+                );
+                promises.push(
+                    createCarre([centres[i]])
+                        .then(resulte => {
+                            dessinCarre.push(resulte);
+                        })
+                );
+            }
+            Promise.all(promises)
+                .then(() => {
+                    let resultat = [];
+                    let inDecoupe = [];
+                    let outDecoupe = [];
+                    for (let i = 0; i < dessinCarre.length; i++) {
+                        if (listeCarreInOut[i]['etat'] === 0) {
+                            inDecoupe.push({ coord: dessinCarre[i], booleanCarre: listeCarreInOut[i] });
+                        }if (listeCarreInOut[i]['etat'] === 1) {
+                            outDecoupe.push({ coord: dessinCarre[i], booleanCarre: listeCarreInOut[i] });
+                        }
+                    }
+                    resultat.push( {inDecoupe : inDecoupe , outDecoupe : outDecoupe} )
+                    console.log(resultat);
+                    resolve(resultat);
+                })
+                .catch(error => {
+                    console.log(error);
+                    reject(error);
+                });
+
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
     });
 }
 
 
 module.exports = {
-    createCarre
+    createCarre,
+    verifCarreDecoupe,
+    listeCarre
 };

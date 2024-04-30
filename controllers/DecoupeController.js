@@ -22,8 +22,6 @@ router.post('/utilisateur/getDetailDecoupe', (req, res) => {
     const nom = req.body.nom;
 
     const requete = "select * from decoupe_cent where indicatif like '" + indicatif + "' and nom like '" + nom + "' ;";
-    console.log(requete);
-
     // Vérifiez si l'utilisateur est authentifié
     pool.query("select * from decoupe_cent where indicatif like '" + indicatif + "' and nom like '" + nom + "' ;", (error, results) => {
         if (error) {
@@ -31,7 +29,6 @@ router.post('/utilisateur/getDetailDecoupe', (req, res) => {
             res.status(500).send('Erreur de base de données');
         } else {
             const decoupes = results.rows;
-            console.log(decoupes);
             return res.json(decoupes); // Renvoyer la réponse au client avec les données
         }
     });
@@ -41,7 +38,6 @@ router.post('/testTableau', async (req, res) => {
     const tableauJSON = req.body.tableau;
     try {
         if (tableauJSON.length!=0) {
-            console.log(tableauJSON)
             const detailD = await detailDecoupe(tableauJSON);
 
             return res.json(detailD);

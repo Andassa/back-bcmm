@@ -6,7 +6,6 @@ const pool = require('../../database.js'); // Importez la configuration de la ba
 const detailDecoupe = async (tableau) => {
     return new Promise((resolve, reject) => {
         let request = "select gid , perimeter , dec100new_ , indicatif , nom, date_editi , ST_AsGeoJSON(geom) from decoupe_cent where ";
-        console.log(tableau);
         for (let i = 0; i < tableau.length; i++) {
             if (i!= tableau.length-1) {
                 request += "(indicatif like '"+tableau[i]['indicatif']+"' and nom like '"+tableau[i]['nom']+"') or ";
@@ -15,7 +14,6 @@ const detailDecoupe = async (tableau) => {
                 request += "(indicatif like '"+tableau[i]['indicatif']+"' and nom like '"+tableau[i]['nom']+"')";
             }
         }
-        console.log(request);
         pool.query(request, (error, resultat) => {
             if (error) {
                 console.error(error);

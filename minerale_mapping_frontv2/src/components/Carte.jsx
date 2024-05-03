@@ -28,7 +28,6 @@ function MapPage() {
       const decoupe = selectDecoupe.filter(sel => sel.selectionne === 'true');
       if (decoupe.length > 0 && listeCentre.length > 0) {
         const donnees = { 'decoupes': decoupe, 'centre': listeCentre };
-        console.log(donnees);
         fetch('http://localhost:3000/formeCarre', {
           method: 'POST',
           headers: {
@@ -43,7 +42,6 @@ function MapPage() {
             return response.json();
           })
           .then(data => {
-            console.log(data);
             setListeCarre(data);
           })
           .catch(error => {

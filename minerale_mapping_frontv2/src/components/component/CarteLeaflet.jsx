@@ -84,6 +84,8 @@ const DrawMap = (props) => {
         }
         else {
             setCoordPolygone(null);
+            setDessinCarre([]);
+            setDessinHorsDecoupe([]);
         }
     }, [decoupeAffiche]);
     // après l'import de liste de centre, il se transforment en carrées qui s'affiche ici 
@@ -91,11 +93,16 @@ const DrawMap = (props) => {
         if (listeCarre.length>0) {
             // console.log(listeCarre);
             let listIn = [];
-            listeCarre[0]['inDecoupe'].forEach(element => {
-                console.log(element['coord']);
-                listIn.push(element['coord']);
+            let listOut = [];
+            listeCarre.forEach(element => {
+                if (element['etat']===0) {
+                    listIn.push(element['coord'][0]);
+                }else{
+                    listOut.push(element['coord'][0]);
+                }
             });
             setDessinCarre(listIn);
+            setDessinHorsDecoupe(listOut);
         }
     }, [listeCarre]);
     useEffect(() => {

@@ -66,31 +66,18 @@ const listeCarre = async (centres, decoupes) => {
                 promises.push(
                     verifCarreDecoupe(centres[i], decoupes)
                         .then(resulte => {
-                            listeCarreInOut.push(resulte);
-                        })
-                );
-                promises.push(
-                    createCarre([centres[i]])
-                        .then(resulte => {
-                            dessinCarre.push(resulte);
+                            createCarre([resulte])
+                                .then(resultat => {
+                                    const res1 = { ...resulte, coord: resultat }
+                                    listeCarreInOut.push(res1);
+                                })
                         })
                 );
             }
             Promise.all(promises)
                 .then(() => {
-                    let resultat = [];
-                    let inDecoupe = [];
-                    let outDecoupe = [];
-                    for (let i = 0; i < dessinCarre.length; i++) {
-                        if (listeCarreInOut[i]['etat'] === 0) {
-                            inDecoupe.push({ coord: dessinCarre[i], booleanCarre: listeCarreInOut[i] });
-                        }if (listeCarreInOut[i]['etat'] === 1) {
-                            outDecoupe.push({ coord: dessinCarre[i], booleanCarre: listeCarreInOut[i] });
-                        }
-                    }
-                    resultat.push( {inDecoupe : inDecoupe , outDecoupe : outDecoupe} )
-                    console.log(resultat);
-                    resolve(resultat);
+                    console.log(listeCarreInOut[0]['coord'])
+                    resolve(listeCarreInOut);
                 })
                 .catch(error => {
                     console.log(error);

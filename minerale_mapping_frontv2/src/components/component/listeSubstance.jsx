@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -20,8 +20,34 @@ const Item = styled(Paper)(({ theme }) => ({
     textAlign: 'center',
     color: theme.palette.text.secondary,
 }));
-export default function OutlinedCard() {
-    const [selectChoixSubs, setSelectChoixSubs ] = useState(null);
+export default function OutlinedCard(props) {
+    const [selectChoixSubs, setSelectChoixSubs] = useState(null);
+    const [checkedItems, setCheckedItems] = useState({});
+    const {setChoixSubs } = props;
+
+    useEffect(() => {
+        const initialCheckedItems = {};
+        if (selectChoixSubs) {
+            selectChoixSubs.forEach(sub => {
+                initialCheckedItems[sub.id] = true;
+            });
+            setCheckedItems(initialCheckedItems);
+        }
+    }, [selectChoixSubs]);
+
+    const handleCheckboxChange = (event, id) => {
+        setCheckedItems(prevState => ({
+            ...prevState,
+            [id]: event.target.checked
+        }));
+    };
+    useEffect(() => {
+        const checkedSubs = Object.entries(checkedItems)
+            .filter(([key, value]) => value === true)
+            .map(([key, value]) => parseInt(key));
+            setChoixSubs(checkedSubs);
+    }, [checkedItems])
+
     return (
         <Box sx={{ minWidth: 275, padding: '10px' }}>
             <Card variant="outlined">
@@ -32,11 +58,16 @@ export default function OutlinedCard() {
                         </Typography>
 
                     </CardContent>
-                    <Box sx={{ flexGrow: 1 }}style={{height: '230px', overflowY: 'scroll',}}>
+                    <Box sx={{ flexGrow: 1 }} style={{ height: '230px', overflowY: 'scroll', }}>
                         <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
                             {selectChoixSubs && selectChoixSubs.map((sub) => (
                                 <Grid item xs={1} sm={3} md={4} key={sub.id}>
-                                    <Item><FormControlLabel control={<Checkbox defaultChecked />} label={sub.nom} /></Item>
+                                    <Item><FormControlLabel control={
+                                        <Checkbox
+                                            checked={checkedItems[sub.id] || false}
+                                            onChange={(event) => handleCheckboxChange(event, sub.id)}
+                                        />
+                                    } label={sub.nom} /></Item>
                                 </Grid>
                             ))}
                         </Grid>

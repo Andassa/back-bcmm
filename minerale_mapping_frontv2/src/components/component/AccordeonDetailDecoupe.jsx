@@ -4,15 +4,16 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import RechercheDecoupe from './RechercheDecoupe';
 // import TableauDetailPermis from './TableauDetailPermis';
 import DetailDecoupe from './DetailDecoupe';
 
 export default function ControlledAccordions(props) {
   const [expanded, setExpanded] = React.useState(false);
 
-  const {selectDecoupe} = props;
-  const {setSelectDecoupe} = props;
-  const {setDecoupeAffiche}= props;
+  const { selectDecoupe } = props;
+  const { setSelectDecoupe } = props;
+  const { setDecoupeAffiche } = props;
 
   const selected = selectDecoupe.filter(sel => sel.selectionne === 'true');
 
@@ -35,7 +36,10 @@ export default function ControlledAccordions(props) {
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-            <DetailDecoupe selectDecoupe={selectDecoupe} setSelectDecoupe={setSelectDecoupe} setDecoupeAffiche={setDecoupeAffiche} />
+          <div style={{ padding:'50px' }} sx={{ m: 0, minWidth: 150, display: 'flex' }}>
+            <RechercheDecoupe setSelectDecoupe={setSelectDecoupe} selectDecoupe={selectDecoupe} />
+          </div>
+          <DetailDecoupe selectDecoupe={selectDecoupe} setSelectDecoupe={setSelectDecoupe} setDecoupeAffiche={setDecoupeAffiche} />
         </AccordionDetails>
       </Accordion>
     </div>

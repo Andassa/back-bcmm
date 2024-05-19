@@ -27,7 +27,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 
 export default function CustomizedDialogs(props) {
     const [open, setOpen] = React.useState(false);
-    const {setSelectChoixSubs } = props;
+    const {setSelectChoixSubs} = props;
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -70,7 +70,6 @@ export default function CustomizedDialogs(props) {
     let coche = [];
     const handelConfirmation = () => {
         const checkedList = Object.keys(checkedItems).filter(key => checkedItems[key]);
-        console.log(checkedList[0]);
         checkedList.forEach(checkedItem =>
             coche.push(subs1.filter(item => item.id == checkedItem)[0])
         )

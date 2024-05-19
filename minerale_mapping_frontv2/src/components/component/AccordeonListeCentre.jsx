@@ -23,13 +23,15 @@ export default function ControlledAccordions(props) {
   const { listeCentre } = props;
   const { setListeCentre } = props;
   const { decoupeAffiche } = props;
+  const { setListeCarre } = props;
 
   useEffect(() => {
     if (decoupeAffiche.length != 0) {
       setAutorisation(true);
     }else{
       setCarreSelect([]);
-      setListeCentre([]); 
+      setListeCentre([]);
+      setListeCarre([]); 
       setAutorisation(false);
     }
   }, [decoupeAffiche])
@@ -75,7 +77,7 @@ export default function ControlledAccordions(props) {
         >
 
           <Typography sx={{ width: '100%', flexShrink: 0 }}>
-            Listes des Carrées : {listeCentre.length}
+            Listes des centres : {listeCentre.length}
           </Typography>
 
         </AccordionSummary>

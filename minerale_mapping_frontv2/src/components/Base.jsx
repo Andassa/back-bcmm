@@ -143,7 +143,7 @@ export default function HideAppBar(props) {
                             </Box>
 
                             <Box sx={{ flexGrow: 0 }}>
-                                <Tooltip title="Open settings">
+                                <Tooltip title="Profil">
                                     <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                                         <Avatar alt={utilisateur?.nom + ' '+ utilisateur?.prenom} src='assets/images/user.png' />
                                     </IconButton>

@@ -11,16 +11,22 @@ import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 
 
-export default function SelectVariants() {
-    const [age, setAge] = React.useState('');
+export default function SelectVariants(props) {
+    const {selectPermis, setSelectPermis} = props;
+    const {nomPersonne, setNomPersonne} = props;
+    
 
-    const handleChange = (event) => {
-        setAge(event.target.value);
-        console.log(event.target.value);
+    const handleInputChange = (event, newInputValue) => {
+        setNomPersonne(newInputValue);
     };
+    
     const [typePermis, setTypePermis] = useState([]);
     const [demandeur, setDemandeur] = useState([]);
 
+    const handleChange = (event) => {
+        setSelectPermis(event.target.value);
+    };
+    
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -55,18 +61,23 @@ export default function SelectVariants() {
         minWidth: '350px',
     });
 
-
-
     return (
         <div>
             <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
-                <Autocomplete 
+                <Autocomplete
                     {...defaultProps}
                     id="disable-close-on-select"
                     PaperComponent={CustomPaper}
                     freeSolo
+                    inputValue={nomPersonne}
+                    onInputChange={handleInputChange}
                     renderInput={(params) => (
-                        <TextField required {...params} label="demandeur" variant="standard" />
+                        <TextField
+                            required
+                            {...params}
+                            label="demandeur"
+                            variant="standard"
+                        />
                     )}
                     sx={{ m: 0, minWidth: 170, display: 'flex' }}
                 />
@@ -75,10 +86,9 @@ export default function SelectVariants() {
                     <Select
                         labelId="demo-simple-select-standard-label"
                         id="demo-simple-select-standard"
-                        value={age}
+                        value={selectPermis}
                         onChange={handleChange}
-                        label="typepermis"
-                    >
+                        label="typepermis">
                         {typePermis.map((option) => (
                             <MenuItem key={option.id} value={option.id}>
                                 {option.libelle} {option.typepermis}

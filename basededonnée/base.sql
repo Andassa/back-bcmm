@@ -36,27 +36,33 @@ create table personne_societe(
     registre_2 VARCHAR(50)
 );
 
-CREATE OR REPLACE FUNCTION get_couches_subs(nom_substance VARCHAR) 
-RETURNS SETOF geometry AS 
-$$
-DECLARE
-    multi_poly geometry;  -- Déclaration d'une variable pour stocker le résultat
-BEGIN
-    SELECT ST_Collect(coalesce(t_zone.geom, t_line.geom, t_point.geom)) INTO multi_poly
-    FROM 
-    (
-        SELECT geom FROM indice_zone iz WHERE nom LIKE '%' || nom_substance || '%'
-    ) t_zone
-    FULL JOIN
-    (
-        SELECT geom FROM indice_line il  WHERE nom LIKE '%' || nom_substance || '%'
-    ) t_line ON t_zone.geom = t_line.geom 
-    FULL JOIN
-    (
-        SELECT geom FROM indice_point ip  WHERE nom LIKE '%' || nom_substance || '%'
-    ) t_point ON t_line.geom = t_point.geom;
+-- CREATE OR REPLACE FUNCTION get_couches_subs(nom_substance VARCHAR) 
+-- RETURNS SETOF geometry AS 
+-- $$
+-- DECLARE
+--     multi_poly geometry;  -- Déclaration d'une variable pour stocker le résultat
+-- BEGIN
+--     SELECT ST_Collect(coalesce(t_zone.geom, t_line.geom, t_point.geom)) INTO multi_poly
+--     FROM 
+--     (
+--         SELECT geom FROM indice_zone iz WHERE nom LIKE '%' || nom_substance || '%'
+--     ) t_zone
+--     FULL JOIN
+--     (
+--         SELECT geom FROM indice_line il  WHERE nom LIKE '%' || nom_substance || '%'
+--     ) t_line ON t_zone.geom = t_line.geom 
+--     FULL JOIN
+--     (
+--         SELECT geom FROM indice_point ip  WHERE nom LIKE '%' || nom_substance || '%'
+--     ) t_point ON t_line.geom = t_point.geom;
 
-    RETURN NEXT multi_poly;  -- Retour d'une ligne contenant une géométrie MultiPolygon
-END;
-$$
-LANGUAGE 'plpgsql';
+--     RETURN NEXT multi_poly;  -- Retour d'une ligne contenant une géométrie MultiPolygon
+-- END;
+-- $$
+-- LANGUAGE 'plpgsql';
+
+
+create table propriete (
+    id seriale not null primary key ,
+    libelle VARCHAR(20)
+);

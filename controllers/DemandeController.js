@@ -30,5 +30,17 @@ router.get('/utilisateur/getTypePermis', (req, res) => {
         }
     });
 });
+router.post('/utilisateur/getDonneDemande', (req, res) => {
+    const tableauDemande = req.body.tableauDemande;
+    try {
+        if (tableauDemande.length>0) {
+            return res.json(tableauDemande);
+        } else {
+            return res.json({'error':'tableau vide'});
+        }
+    } catch (error) {
+        return res.json({"error":error});
+    }
+});
 
 module.exports = router;

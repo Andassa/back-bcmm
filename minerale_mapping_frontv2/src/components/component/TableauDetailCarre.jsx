@@ -30,7 +30,7 @@ export default function StickyHeadTable(props) {
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
             <TableContainer sx={{ maxHeight: 440 }}>
                 <Table stickyHeader aria-label="sticky table">
-                <caption>A basic table example with a caption</caption>
+                {/* <caption>A basic table example with a caption</caption> */}
                     <TableHead>
                         <TableRow>
                             <TableCell >id</TableCell>

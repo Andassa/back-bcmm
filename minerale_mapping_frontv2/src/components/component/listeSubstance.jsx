@@ -67,7 +67,7 @@ export default function OutlinedCard(props) {
                                             checked={checkedItems[sub.id] || false}
                                             onChange={(event) => handleCheckboxChange(event, sub.id)}
                                         />
-                                    } label={sub.nom} /></Item>
+                                    } label= {sub.nom} /></Item>
                                 </Grid>
                             ))}
                         </Grid>

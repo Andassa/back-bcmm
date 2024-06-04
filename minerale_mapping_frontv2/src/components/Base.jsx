@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Carte from './Carte';
 import PropTypes from 'prop-types';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -19,7 +18,10 @@ import MenuItem from '@mui/material/MenuItem';
 import logo from '../assets/images/bcmm.png';
 import axiosInstance from '../Lesmomdules/axiosInstance';
 
-const pages = ['Ajout de donnée'];
+import Carte from './Carte';
+
+const pages = ['Carte'];
+// const pages = ['Ajout de donnée'];
 const settings = ['Profile', 'Logout'];
 
 
@@ -47,6 +49,24 @@ HideOnScroll.propTypes = {
 
 
 export default function HideAppBar(props) {
+    useEffect(() => {
+        // Fonction pour effectuer la requête GET
+        const fetchData = async () => {
+            try {
+                const response = await axiosInstance.get('http://localhost:3000/getSession');
+                if (response.data.hasOwnProperty('user')) {
+                    setUtilisateur(response.data.user);
+                }
+                else{
+                    window.location.href = '/login';
+                }
+
+            } catch (error) {
+                console.error('Erreur lors de la requête GET :', error);
+            }
+        };
+        fetchData();
+    }, []);
 
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -66,24 +86,7 @@ export default function HideAppBar(props) {
         setAnchorElUser(null);
     };
     const [utilisateur, setUtilisateur] = useState(null);
-    useEffect(() => {
-        // Fonction pour effectuer la requête GET
-        const fetchData = async () => {
-            try {
-                const response = await axiosInstance.get('http://localhost:3000/getSession');
-                if (response.data.hasOwnProperty('user')) {
-                    setUtilisateur(response.data.user);
-                }
-                else{
-                    window.location.href = '/login';
-                }
-
-            } catch (error) {
-                console.error('Erreur lors de la requête GET :', error);
-            }
-        };
-        fetchData();
-    }, []);
+    
 
     return (
         <React.Fragment>

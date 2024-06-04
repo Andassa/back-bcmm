@@ -11,6 +11,8 @@ import SendIcon from '@mui/icons-material/Send';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 import './../App.css';
@@ -26,7 +28,9 @@ function MapPage() {
   const [nomPersonne, setNomPersonne] = useState('');
   const [selectPermis, setSelectPermis] = useState('');
   const [confirmation, setConfirmation] = useState({});
+  const [resultat, setResultat] = useState();
 
+  const [ouvert, setOuvert] = React.useState(false);
 
   /////formation de carrée venant des listes de centre////
   useEffect(() => {
@@ -109,8 +113,36 @@ function MapPage() {
         setState({ ...newState, open: true });
       };
       handleClick({ vertical: 'top', horizontal: 'center' });
-    } else { /// else envoie vers la backend 
-      console.log(confirmation);
+    } if (confirmation.hasOwnProperty('valide')) { /// else envoie vers la backend 
+      async function handleOuvert() {
+        setOuvert(true);
+      }
+      async function handleFerme() {
+        setOuvert(false);
+      }
+      handleOuvert();
+      const donneesTableau = { 'nomPersonne': nomPersonne, 'selectPermis': selectPermis, 'listeCarre': listeCarre, 'choixSubs': choixSubs };
+      fetch('http://localhost:3000/getDonneDemande', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 'donneesTableau': donneesTableau })
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Erreur lors de l\'envoi du tableau JSON');
+          }
+          return response.json();
+        })
+        .then(data => {
+          handleFerme();
+          console.log(data);
+          setResultat(data);
+        })
+        .catch(error => {
+          console.error('Erreur :', error);
+        });
     }
   }, [confirmation]);
   //// fin envoie de données vers la base 
@@ -123,6 +155,13 @@ function MapPage() {
       >
         Envoyer
       </Button>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={ouvert}
+        onClick={handleClose}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </React.Fragment>
   );
 

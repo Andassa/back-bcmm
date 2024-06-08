@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import Welcome from "./components/Welcome";
 import Login from "./components/Login";
+import Inscription from "./components/Inscription";
 import Carte from "./components/Base";
   
 function App() {
@@ -18,6 +19,7 @@ function App() {
         <Route path="/" element={<Welcome />} />
         <Route path="/welcome" element={<Welcome />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/inscription" element={<Inscription />} />
         <Route path="/map" element={<Carte />} />
         </Routes>
       </Router>

@@ -40,16 +40,10 @@ export default function ImgMediaCard() {
             console.error('Error sending form data:', error);
         }
     };
-    const testboutton = async (e) => {
+    const inscription = async (e) => {
         e.preventDefault();
         try {
-            const response = await axiosInstance.get('http://localhost:3000/getuserAuthenticated');
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            const jsonData = await response.data;
-            console.log(jsonData);
-            console.log('jsonData');
+            window.location.href = '/inscription'
         } catch (error) {
             // Gestion des erreurs
             console.error('Erreur lors de la requête GET :', error);
@@ -59,7 +53,7 @@ export default function ImgMediaCard() {
     return (
         <Card sx={{ maxWidth: 500, alignItems: 'center', padding: '20px' }}>
             <Typography variant="h3" gutterBottom style={{ color: 'rgb(43, 102, 147)', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '50px' }} >
-                Mineral Mapping
+                Connexion
             </Typography>
             <Typography style={{ color: 'rgb(37, 103, 169)', display: 'flex', alignItems: 'center', justifyContent: 'center' }} variant="overline" display="block" gutterBottom>
                 identifiez-vous
@@ -83,7 +77,7 @@ export default function ImgMediaCard() {
                 <Button type="submit" variant="contained" style={{ float: 'right' }}>se connecter</Button>
             </form>
             <CardActions>
-                <Button size="small" onClick={testboutton} >mot de passe oublié</Button>
+                <Button size="small" onClick={inscription} >Demande d'inscription</Button>
             </CardActions>
         </Card>
     );

@@ -1,5 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const { createMultiPolygon } = require('./service/Carre');
+const { getLitho } = require('./service/lithology');
+const { get_nature, getResult } = require('./service/roche');
+const { getSubs_byId,get_All_Subs_by_id } = require('./service/substance');
 const pool = require('../database.js'); // Importez la configuration de la base de données
 
 router.get('/utilisateur/getDemandeur', (req, res) => {
@@ -30,10 +34,18 @@ router.get('/utilisateur/getTypePermis', (req, res) => {
         }
     });
 });
-router.post('/utilisateur/getDonneDemande', (req, res) => {
-    const tableauDemande = req.body.tableauDemande;
+router.post('/getDonneDemande', async(req, res) => {
+    const tableauDemande = req.body.donneesTableau;
     try {
-        if (tableauDemande.length>0) {
+        if (tableauDemande!= null) {
+            // const listeSubstances = tableauDemande['choixSubs'];
+            const listeCarre = tableauDemande['listeCarre'];
+            const req = await createMultiPolygon(listeCarre);
+            const lith = await getLitho(req);
+            const subs = await get_All_Subs_by_id(tableauDemande['choixSubs']);
+            const result = await getResult(lith, subs[0][0]['nom']);
+            console.log(result);
+            console.log(lith);
             return res.json(tableauDemande);
         } else {
             return res.json({'error':'tableau vide'});

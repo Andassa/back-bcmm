@@ -14,12 +14,11 @@ router.post('/register', (req, res) => {
     const fonction = req.body.fonction;
     const email = req.body.email;
     const password = req.body.password;
-    const role = req.body.role;
 
     // Hachez le mot de passe avant de le stocker en base de données
     bcrypt.hash(password, 10, (err, hash) => {
         // Stockez l'utilisateur dans la base de données PostgreSQL avec le mot de passe haché
-        pool.query('INSERT INTO utilisateurs (id, nom, prenom, username, fonction , email, motdepasse , autorisation) VALUES (concat(\'user\', nextval(\'s_user\')::text), $1,$2,$3,$4,$5,$6,$7)', [nom, prenom, username, fonction, email, hash, role], (err) => {
+        pool.query("INSERT INTO utilisateurs (id, nom, prenom, username, fonction , email, motdepasse, autorisation, etat) VALUES (concat(\'user\', nextval(\'s_user\')::text), $1,$2,$3,$4,$5,$6,'1','1')", [nom, prenom, username, fonction, email, hash], (err) => {
             if (err) {
                 console.error(err);
                 res.send('Erreur lors de l\'inscription');
@@ -66,6 +65,14 @@ router.post('/sendDatalogin', (req, res, next) => {
             if (err) {
                 return next(err);
             }
+            if (user.etat ===1) {
+                const responseData = {message : 'en attente de validation'};
+                return res.json({erreur : responseData})
+            }
+            if (user.etat ===3) {
+                const responseData = {message : 'l\'utilisateur est bloqué'};
+                return res.json({erreur : responseData})
+            }
             // Condition pour déterminer la redirection en fonction du rôle
             if (user.autorisation === 2) {
                 // const responseData = { valide: '/admin/dashboard',user:user };
@@ -89,6 +96,16 @@ router.get('/getSession',(req,res)=>{
     else{
         return res.json({erreur: 'veuillez vous connecter'});
     }
+})
+router.get('/getAllFonction',(req,res)=>{
+    pool.query("select distinct(fonction) from utilisateurs ", (error, results) => {
+        if (error) {
+            console.error(error);
+            res.status(500).send('Erreur de base de données');
+        } else {
+             return res.json(results.rows);
+        }
+    });
 })
 router.get('/logout', (req, res) => {
     req.logout((err) => {

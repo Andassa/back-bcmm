@@ -59,7 +59,6 @@ const verifCarreDecoupe = async (uncentre, decoupes) => {
 const listeCarre = async (centres, decoupes) => {
     return new Promise((resolve, reject) => {
         let listeCarreInOut = [];
-        let dessinCarre = [];
         try {
             let promises = [];
             for (let i = 0; i < centres.length; i++) {
@@ -76,7 +75,6 @@ const listeCarre = async (centres, decoupes) => {
             }
             Promise.all(promises)
                 .then(() => {
-                    console.log(listeCarreInOut[0]['coord'])
                     resolve(listeCarreInOut);
                 })
                 .catch(error => {
@@ -90,10 +88,65 @@ const listeCarre = async (centres, decoupes) => {
         }
     });
 }
+const createPolygon = async (coord) => {
+    return new Promise((resolve, reject) => {
+        try {
+            var requete = "ST_GeomFromText('MULTIPOLYGON ((("
+            for (let i = 0; i < coord.length; i++) {
+                if (i === coord.length - 1) {
+                    requete = requete + coord[i][1] + " " + coord[i][0] + "," + coord[0][1] + " " + coord[0][0];
+                } else {
+                    requete = requete + coord[i][1] + " " + coord[i][0] + ", ";
+                }
+            }
+            requete += ")))',4326)";
+            resolve(requete);
+        } catch (error) {
+            reject(error);
+        }
+    })
+}
+const createMultiPolygon = async (listeCentre) => {
+    return new Promise((resolve, reject) => {
+        try {
+            var requete = "ST_Collect(ARRAY[";
+            let promises = [];
+            for (let i = 0; i < listeCentre.length; i++) {
+                if (i === listeCentre.length - 1) {
+                    promises.push(
+                        createPolygon(listeCentre[i]['coord'][0])
+                            .then(resulte =>
+                                requete += resulte
+                            )
+                    )
+                } else {
+                    promises.push(
+                        createPolygon(listeCentre[i]['coord'][0])
+                            .then(resulte =>
+                                requete += resulte + " ,"
+                            )
+                    )
+                }
+            }
+            Promise.all(promises).then(() => {
+                requete += "])";
+                resolve(requete);
+            }).catch(error => {
+                console.log(error);
+                reject(error);
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    });
+}
 
 
 module.exports = {
     createCarre,
     verifCarreDecoupe,
-    listeCarre
+    listeCarre,
+    createMultiPolygon,
+    createPolygon
 };

@@ -8,7 +8,7 @@ const LocalStrategy = require('passport-local').Strategy;
 passport.use(new LocalStrategy(
     (username, password, done) => {
         // Recherchez l'utilisateur dans la base de données PostgreSQL
-        pool.query('SELECT * FROM utilisateurs WHERE username = $1', [username], (err, result) => {
+        pool.query("SELECT * FROM utilisateurs WHERE username = $1 ", [username], (err, result) => {
             if (err) {
                 return done(err);
             }

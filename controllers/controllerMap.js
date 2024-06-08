@@ -4,7 +4,7 @@ const pool = require('../database.js'); // Importez la configuration de la base 
 
 router.get('/utilisateur/map', (req, res) => {
     // Vérifiez si l'utilisateur est authentifié
-    pool.query('SELECT * FROM lessubstances', (error, results) => {
+    pool.query('SELECT * FROM substances ORDER BY nom ASC;', (error, results) => {
         if (error) {
             console.error(error);
             res.status(500).send('Erreur de base de données');

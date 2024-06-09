@@ -11,6 +11,10 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 export default function RecipeReviewCard(props) {
   const { utilisateur, setUtilisateur } = props;
+  const { modifier, setModifier } = props;
+  const handleModif = ()=>{
+    setModifier(true);
+  }
 
   return (
     <Card sx={{ maxWidth: 800, alignItems: 'center', padding: '30px' }}>
@@ -20,7 +24,7 @@ export default function RecipeReviewCard(props) {
           <Avatar alt={utilisateur?.nom + ' ' + utilisateur?.prenom} src='assets/images/user.png' style={{ height: '125px', width: '125px', marginLeft: '130px' }} />
         }
         action={
-          <Button >Modifier</Button>
+          <Button onClick={handleModif} >Modifier</Button>
         }
       />
       <CardContent>

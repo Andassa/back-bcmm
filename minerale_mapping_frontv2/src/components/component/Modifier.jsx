@@ -13,9 +13,9 @@ import Stack from '@mui/material/Stack';
 
 export default function RecipeReviewCard(props) {
     const { utilisateur, setUtilisateur } = props;
-    const { modif, setModif } = props;
+    const { modifier, setModifier } = props;
     const handleAnnuler = () => {
-        setModif(false)
+        setModifier(false)
     }
     const textF = (<Box sx={{
         display: 'flex',
@@ -31,7 +31,7 @@ export default function RecipeReviewCard(props) {
         <TextField
             id="standard-read-only-input"
             label="Prénom"
-            value={utilisateur.prenom}
+            defaultValue={utilisateur.username}
             variant="standard"
         />
         <TextField

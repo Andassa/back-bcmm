@@ -20,6 +20,7 @@ import axiosInstance from '../Lesmomdules/axiosInstance';
 
 import Carte from './Carte';
 import Profil from './component/Profil';
+import Modifier from './component/Modifier';
 
 const pages = ['Carte'];
 // const pages = ['Ajout de donnée'];
@@ -51,6 +52,7 @@ HideOnScroll.propTypes = {
 
 export default function HideAppBar(props) {
     const [pejy, setPejy] = useState((<Carte />));
+    const [modifier, setModifier] = useState(null);
 
     useEffect(() => {
         // Fonction pour effectuer la requête GET
@@ -91,11 +93,22 @@ export default function HideAppBar(props) {
     };
     const [utilisateur, setUtilisateur] = useState(null);
     // const profileComponent = (<Box style={{maxWidth: 500, alignItems: 'center'}} ><Profil utilisateur ={utilisateur} setUtilisateur={setUtilisateur} /></Box>);
-    const profileComponent = (<div style={{marginLeft:'650px', marginTop:'50px'}} ><Profil utilisateur ={utilisateur} setUtilisateur={setUtilisateur} /></div>);
+    const profileComponent = (<div style={{ marginLeft: '650px', marginTop: '50px' }} ><Profil utilisateur={utilisateur} setUtilisateur={setUtilisateur} modifier={modifier} setModifier={setModifier} /></div>);
     const handleSetting = (setting) => {
         console.log(setting);
         setPejy(profileComponent);
     }
+    useEffect(() => {
+        if (utilisateur !== null) {
+            if (modifier === true) {
+                setPejy((<div style={{ marginLeft: '650px', marginTop: '50px' }} ><Modifier utilisateur={utilisateur} setUtilisateur={setUtilisateur} modifier={modifier} setModifier={setModifier} /></div>));
+            }
+            if(modifier === false) {
+                setPejy(profileComponent);
+            }
+        }
+    }, [modifier, utilisateur])
+
 
     return (
         <React.Fragment>
@@ -161,7 +174,7 @@ export default function HideAppBar(props) {
                                     </IconButton>
                                 </Tooltip>
                                 <Menu
-                                    sx={{ mt: '45px'}}
+                                    sx={{ mt: '45px' }}
                                     id="menu-appbar"
                                     anchorEl={anchorElUser}
                                     anchorOrigin={{

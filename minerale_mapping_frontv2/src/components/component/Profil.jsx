@@ -11,28 +11,18 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 export default function RecipeReviewCard(props) {
   const { utilisateur, setUtilisateur } = props;
-  const [modif, setModif] = useState('0');
-  const handleModif = () => {
-    setModif('1');
-  }
 
   return (
     <Card sx={{ maxWidth: 800, alignItems: 'center', padding: '30px' }}>
       <ArrowBackIcon />
-      {modif === '0' ? (
-        <CardHeader
-          avatar={
-            <Avatar alt={utilisateur?.nom + ' ' + utilisateur?.prenom} src='assets/images/user.png' style={{ height: '125px', width: '125px', marginLeft: '130px' }} />
-          }
-          action={
-            <Button onClick={handleModif()} >Modifier</Button>
-          }
-        />
-      ) : (<CardHeader
+      <CardHeader
         avatar={
           <Avatar alt={utilisateur?.nom + ' ' + utilisateur?.prenom} src='assets/images/user.png' style={{ height: '125px', width: '125px', marginLeft: '130px' }} />
         }
-      />)}
+        action={
+          <Button >Modifier</Button>
+        }
+      />
       <CardContent>
         <Box sx={{
           display: 'flex',
@@ -43,42 +33,45 @@ export default function RecipeReviewCard(props) {
             id="standard-read-only-input"
             label="Nom"
             value={utilisateur.nom}
+            InputProps={{
+              readOnly: true,
+            }}
             variant="standard"
           />
           <TextField
             id="standard-read-only-input"
             label="Prénom"
             value={utilisateur.prenom}
+            InputProps={{
+              readOnly: true,
+            }}
             variant="standard"
           />
           <TextField
             id="standard-read-only-input"
             label="Nom d'utilisateur"
             value={utilisateur.username}
+            InputProps={{
+              readOnly: true,
+            }}
             variant="standard"
           />
           <TextField
             id="standard-read-only-input"
             label="Fonction"
             value={utilisateur.fonction}
+            InputProps={{
+              readOnly: true,
+            }}
             variant="standard"
           />
           <TextField
             id="standard-read-only-input"
             label="Email"
             value={utilisateur.email}
-            variant="standard"
-          />
-          <TextField
-            id="standard-read-only-input"
-            label="Password"
-            type="password"
-            variant="standard"
-          />
-          <TextField
-            id="standard-read-only-input"
-            label=" Confirmation Password"
-            type="password"
+            InputProps={{
+              readOnly: true,
+            }}
             variant="standard"
           />
         </Box>

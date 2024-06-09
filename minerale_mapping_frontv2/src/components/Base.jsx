@@ -19,10 +19,11 @@ import logo from '../assets/images/bcmm.png';
 import axiosInstance from '../Lesmomdules/axiosInstance';
 
 import Carte from './Carte';
+import Profil from './component/Profil';
 
 const pages = ['Carte'];
 // const pages = ['Ajout de donnée'];
-const settings = ['Profile', 'Logout'];
+const settings = ['Profil', 'Logout'];
 
 
 function HideOnScroll(props) {
@@ -49,6 +50,8 @@ HideOnScroll.propTypes = {
 
 
 export default function HideAppBar(props) {
+    const [pejy, setPejy] = useState((<Carte />));
+
     useEffect(() => {
         // Fonction pour effectuer la requête GET
         const fetchData = async () => {
@@ -57,7 +60,7 @@ export default function HideAppBar(props) {
                 if (response.data.hasOwnProperty('user')) {
                     setUtilisateur(response.data.user);
                 }
-                else{
+                else {
                     window.location.href = '/login';
                 }
 
@@ -79,6 +82,7 @@ export default function HideAppBar(props) {
     };
 
     const handleCloseNavMenu = () => {
+        setPejy((<Carte />));
         setAnchorElNav(null);
     };
 
@@ -86,7 +90,12 @@ export default function HideAppBar(props) {
         setAnchorElUser(null);
     };
     const [utilisateur, setUtilisateur] = useState(null);
-    
+    // const profileComponent = (<Box style={{maxWidth: 500, alignItems: 'center'}} ><Profil utilisateur ={utilisateur} setUtilisateur={setUtilisateur} /></Box>);
+    const profileComponent = (<div style={{marginLeft:'650px', marginTop:'50px'}} ><Profil utilisateur ={utilisateur} setUtilisateur={setUtilisateur} /></div>);
+    const handleSetting = (setting) => {
+        console.log(setting);
+        setPejy(profileComponent);
+    }
 
     return (
         <React.Fragment>
@@ -148,11 +157,11 @@ export default function HideAppBar(props) {
                             <Box sx={{ flexGrow: 0 }}>
                                 <Tooltip title="Profil">
                                     <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                        <Avatar alt={utilisateur?.nom + ' '+ utilisateur?.prenom} src='assets/images/user.png' />
+                                        <Avatar alt={utilisateur?.nom + ' ' + utilisateur?.prenom} src='assets/images/user.png' />
                                     </IconButton>
                                 </Tooltip>
                                 <Menu
-                                    sx={{ mt: '45px' }}
+                                    sx={{ mt: '45px'}}
                                     id="menu-appbar"
                                     anchorEl={anchorElUser}
                                     anchorOrigin={{
@@ -169,13 +178,13 @@ export default function HideAppBar(props) {
                                 >
                                     <div style={{ padding: '5px' }}>
                                         <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }} >
-                                            <Avatar alt={utilisateur?.nom + ' '+ utilisateur?.prenom} src='assets/images/user.png' />
+                                            <Avatar alt={utilisateur?.nom + ' ' + utilisateur?.prenom} src='assets/images/user.png' />
                                         </div>
-                                        <p style={{fontFamily:'Merriweather'}} >{utilisateur?.nom + ' '+ utilisateur?.prenom}</p>
+                                        <p style={{ fontFamily: 'Merriweather' }} >{utilisateur?.nom + ' ' + utilisateur?.prenom}</p>
                                     </div>
                                     <hr />
                                     {settings.map((setting) => (
-                                        <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                                        <MenuItem key={setting} onClick={() => handleSetting(setting)}>
                                             <Typography textAlign="center">{setting}</Typography>
                                         </MenuItem>
                                     ))}
@@ -188,7 +197,7 @@ export default function HideAppBar(props) {
             <Toolbar />
             <Container sx={{ mx: 0, ml: 0 }} style={{ marginTop: '15px' }}>
                 <Box sx={{ my: 1 }}>
-                    <Carte />
+                    {pejy}
                 </Box>
             </Container>
         </React.Fragment>

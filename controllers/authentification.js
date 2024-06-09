@@ -29,12 +29,36 @@ router.post('/register', (req, res) => {
     });
 }
 );
+router.post('/updateProfile', (req, res) => {
+    // Récupérez les données du formulaire d'inscription
+    const id = req.body.id;
+    const nom = req.body.nom;
+    const prenom = req.body.prenom;
+    const username = req.body.username;
+    const fonction = req.body.fonction;
+    const email = req.body.email;
+    const password = req.body.password;
+
+    // Hachez le mot de passe avant de le stocker en base de données
+    bcrypt.hash(password, 10, (err, hash) => {
+        // Stockez l'utilisateur dans la base de données PostgreSQL avec le mot de passe haché
+        pool.query("update utilisateurs set nom='"+nom+"', prenom='"+prenom+"', username='"+username+"', fonction='"+fonction+"' , email='"+email+"', motdepasse='"+hash+"' where id = '"+id+"'", (err) => {
+            if (err) {
+                console.error(err);
+                res.send('Erreur lors de la mis à');
+            } else {
+                res.redirect('/login');
+            }
+        });
+    });
+}
+);
 
 router.get('/login', (req, res) => {
     const errors = req.flash('error');
     // Vérifiez si l'utilisateur est déjà authentifié
 
-    if (errors.length>0) {
+    if (errors.length > 0) {
         console.log('Erreurs de connexion :', errors.length);
         res.json(errors);
     } else {
@@ -65,13 +89,13 @@ router.post('/sendDatalogin', (req, res, next) => {
             if (err) {
                 return next(err);
             }
-            if (user.etat ===1) {
-                const responseData = {message : 'en attente de validation'};
-                return res.json({erreur : responseData})
+            if (user.etat === 1) {
+                const responseData = { message: 'en attente de validation' };
+                return res.json({ erreur: responseData })
             }
-            if (user.etat ===3) {
-                const responseData = {message : 'l\'utilisateur est bloqué'};
-                return res.json({erreur : responseData})
+            if (user.etat === 3) {
+                const responseData = { message: 'l\'utilisateur est bloqué' };
+                return res.json({ erreur: responseData })
             }
             // Condition pour déterminer la redirection en fonction du rôle
             if (user.autorisation === 2) {
@@ -89,21 +113,21 @@ router.post('/sendDatalogin', (req, res, next) => {
         });
     })(req, res, next);
 });
-router.get('/getSession',(req,res)=>{
+router.get('/getSession', (req, res) => {
     if (req.user) {
-        return res.json({user: req.user});
+        return res.json({ user: req.user });
     }
-    else{
-        return res.json({erreur: 'veuillez vous connecter'});
+    else {
+        return res.json({ erreur: 'veuillez vous connecter' });
     }
 })
-router.get('/getAllFonction',(req,res)=>{
+router.get('/getAllFonction', (req, res) => {
     pool.query("select distinct(fonction) from utilisateurs ", (error, results) => {
         if (error) {
             console.error(error);
             res.status(500).send('Erreur de base de données');
         } else {
-             return res.json(results.rows);
+            return res.json(results.rows);
         }
     });
 })

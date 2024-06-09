@@ -13,9 +13,30 @@ import Stack from '@mui/material/Stack';
 
 export default function RecipeReviewCard(props) {
     const { utilisateur, setUtilisateur } = props;
+    const [values, setValues] = useState({
+        nom: utilisateur.nom,
+        prenom: utilisateur.prenom,
+        username: utilisateur.username,
+        fonction: utilisateur.fonction,
+        email: utilisateur.email,
+      });
+    
+      // Gestionnaire de changement pour les TextFields
+      const handleChange = (event) => {
+        const { name, value } = event.target;
+        setValues({
+          ...values,
+          [name]: value,
+        });
+      };
+    
+    
     const { modifier, setModifier } = props;
     const handleAnnuler = () => {
         setModifier(false)
+    }
+    const handleValider = ()=>{
+        console.log(values)
     }
     const textF = (<Box sx={{
         display: 'flex',
@@ -25,31 +46,31 @@ export default function RecipeReviewCard(props) {
         <TextField
             id="standard-read-only-input"
             label="Nom"
-            defaultValue={utilisateur.nom}
+            defaultValue={values.nom}
             variant="standard"
         />
         <TextField
             id="standard-read-only-input"
             label="Prénom"
-            defaultValue={utilisateur.username}
+            defaultValue={values.username}
             variant="standard"
         />
         <TextField
             id="standard-read-only-input"
             label="Nom d'utilisateur"
-            defaultValue={utilisateur.username}
+            defaultValue={values.username}
             variant="standard"
         />
         <TextField
             id="standard-read-only-input"
             label="Fonction"
-            defaultValue={utilisateur.fonction}
+            defaultValue={values.fonction}
             variant="standard"
         />
         <TextField
             id="standard-read-only-input"
             label="Email"
-            defaultValue={utilisateur.email}
+            defaultValue={values.email}
             variant="standard"
         />
         <TextField
@@ -83,7 +104,7 @@ export default function RecipeReviewCard(props) {
                 {content}
                 <Stack spacing={30} direction="row">
                     <Button variant="outlined" onClick={handleAnnuler} >Annuler</Button>
-                    <Button variant="contained">Valider</Button>
+                    <Button variant="contained" onClick={handleValider}>Valider</Button>
                 </Stack>
             </CardContent>
         </Card>

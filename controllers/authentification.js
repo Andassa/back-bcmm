@@ -38,19 +38,61 @@ router.post('/updateProfile', (req, res) => {
     const fonction = req.body.fonction;
     const email = req.body.email;
     const password = req.body.password;
+    const formData = {id, nom, prenom, password}
 
     // Hachez le mot de passe avant de le stocker en base de données
     bcrypt.hash(password, 10, (err, hash) => {
         // Stockez l'utilisateur dans la base de données PostgreSQL avec le mot de passe haché
-        pool.query("update utilisateurs set nom='"+nom+"', prenom='"+prenom+"', username='"+username+"', fonction='"+fonction+"' , email='"+email+"', motdepasse='"+hash+"' where id = '"+id+"'", (err) => {
+        pool.query("update utilisateurs set nom='" + nom + "', prenom='" + prenom + "', username='" + username + "', fonction='" + fonction + "' , email='" + email + "', motdepasse='" + hash + "' where id = '" + id + "'", (err) => {
             if (err) {
                 console.error(err);
-                res.send('Erreur lors de la mis à');
+                res.send('Erreur lors de la mis à jour ');
             } else {
                 res.redirect('/login');
             }
         });
     });
+    passport.authenticate('local', (err, user, message, info) => {
+        if (message) {
+            req.flash('error', message);
+            const responseData = { erreur: message };
+            return res.json(responseData);
+        }
+        if (err) {
+            return next(err);
+        }
+        if (!user) {
+            const responseData = { erreur: 'nom d\'utilisateur ou mot de passe incorrecte' };
+            return res.json(responseData);
+        }
+        // Authentification réussie
+        req.logIn(user, (err) => {
+            if (err) {
+                return next(err);
+            }
+            if (user.etat === 1) {
+                const responseData = { message: 'en attente de validation' };
+                return res.json({ erreur: responseData })
+            }
+            if (user.etat === 3) {
+                const responseData = { message: 'le compte est bloqué' };
+                return res.json({ erreur: responseData })
+            }
+            // Condition pour déterminer la redirection en fonction du rôle
+            if (user.autorisation === 2) {
+                // const responseData = { valide: '/admin/dashboard',user:user };
+                // return res.json(responseData);
+                res.redirect('/admin/dashboard');
+            } else if (user.autorisation === 1) {
+                // const responseData = { valide: '/utilisateur/map', user:user };
+                // return res.json(responseData);
+                res.redirect('/utilisateur/map');
+            }
+            else {
+                res.send('accès non autorisé');
+            }
+        });
+    })(req, res, next);
 }
 );
 
@@ -94,7 +136,7 @@ router.post('/sendDatalogin', (req, res, next) => {
                 return res.json({ erreur: responseData })
             }
             if (user.etat === 3) {
-                const responseData = { message: 'l\'utilisateur est bloqué' };
+                const responseData = { message: 'le compte est bloqué' };
                 return res.json({ erreur: responseData })
             }
             // Condition pour déterminer la redirection en fonction du rôle

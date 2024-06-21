@@ -1,7 +1,8 @@
 const pool = require('../../database.js');
 
 async function get_nature(subs) {
-    var requete = "select idprop from prop_subs where subs Ilike '" + subs + "%'";
+    var requete = "select idprop from prop_subs where subs Ilike '" + subs + "'";
+
     return new Promise((resolve, reject) => {
         pool.query(requete, (error, resultat) => {
             if (error) {
@@ -42,7 +43,6 @@ async function bd(bd, mot) {
         get_id_bd(bd)
             .then(result => {
                 var requete = "SELECT EXISTS (SELECT 1 FROM prop_subs WHERE subs ilike '" + mot + "' AND idprop = '" + result[0].id + "') AS result;";
-                console.log(requete);
                 pool.query(requete, (error, resultat) => {
                     if (error) {
                         reject('Erreur de base de données');
@@ -79,97 +79,159 @@ async function roche2(litho, subs) {
         }).catch(error => reject(error));
     })
 }
+//
 async function mineraux(mots, indice) {
     let result = [];
-
-    new Promise(async (resolve, reject) => {
-        try {
-            if (mots['mot1'] === null) {
-                // const test = 'dunite';
-                const mots2 = mots['mot2'].split(', ');
-                // const mots2 = test.split(', ');
-                for (let mot2 of mots2) {
-                    if (await bd('bd5', mot2) === true || await bd('bd7', mot2) === true || await bd('bd9', mot2) === true) {
-                        result.push(4);
-                    } else {
-                        result.push(2);
-                    }
+    try {
+        if (mots['mot1'] === null) {
+            const mots2 = mots['mot2'].split(', ');
+            let resultparmot = [];
+            for (let mot2 of mots2) {
+                if (await bd('bd5', mot2) === true) {
+                    resultparmot.push(4);
+                } else {
+                    resultparmot.push(2);
+                }
+                if (await bd('bd7', mot2) === true) {
+                    resultparmot.push(4);
+                } else {
+                    resultparmot.push(2);
+                }
+                if (await bd('bd9', mot2) === true) {
+                    resultparmot.push(4);
+                } else {
+                    resultparmot.push(3);
                 }
             }
-            else {
-                const mots1 = mots['mot1'].split(', ');
-                const mots2 = mots['mot2'].split(', ');
-                for (let mot1 of mots1) {
-                    if (await bd('bd4', mot1) === true) {
-                        for (let mot2 of mots2) {
-                            if (await bd('bd5', mot2) === true) {
-                                result.push(4);
-                            } else {
-                                result.push(2);
-                            }
+            result = resultparmot;
+        } else {
+            const mots1 = mots['mot1'].split(', ');
+            const mots2 = mots['mot2'].split(', ');
+            for (let mot1 of mots1) {
+                if (await bd('bd4', mot1) === true) {
+                    for (let mot2 of mots2) {
+                        if (await bd('bd5', mot2) === true) {
+                            result.push(4);
+                        } else {
+                            result.push(2);
                         }
-                    } if (await bd('bd6', mot1) === true) {
-                        for (let mot2 of mots2) {
-                            if (await bd('bd7', mot2) === true) {
-                                result.push(4);
-                            } else {
-                                result.push(1);
-                            }
-                        }
-                    } if (await bd('bd8', mot1) === true) {
-                        for (let mot2 of mots2) {
-                            if (await bd('bd9', mot2) === true) {
-                                result.push(4);
-                            } else {
-                                result.push(2);
-                            }
-                        }
-                    } else {
-                        result.push(0);
                     }
                 }
+                if (await bd('bd6', mot1) === true) {
+                    for (let mot2 of mots2) {
+                        if (await bd('bd7', mot2) === true) {
+                            result.push(4);
+                        } else {
+                            result.push(1);
+                        }
+                    }
+                }
+                if (await bd('bd8', mot1) === true) {
+                    for (let mot2 of mots2) {
+                        if (await bd('bd9', mot2) === true) {
+                            result.push(4);
+                        } else {
+                            result.push(3);
+                        }
+                    }
+                } else {
+                    result.push(0);
+                }
             }
-            console.log('result par lith' + indice + ' : ' + result);
-            resolve(result);
-        } catch (error) {
-            reject(error);
         }
-    })
+        const frequence = {};
+        for (let element of result) {
+            if (frequence[element]) {
+                frequence[element]++;
+            } else {
+                frequence[element] = 1;
+            }
+        }
+
+        let valeurLaPlusFrequent = result[0];
+        let maxFrequence = frequence[valeurLaPlusFrequent];
+
+        for (let element in frequence) {
+            if (frequence[element] > maxFrequence) {
+                valeurLaPlusFrequent = element;
+                maxFrequence = frequence[element];
+            }
+        }
+
+        console.log(frequence);
+        const colonnesEgalesAUn = {};
+
+
+        for (const key in frequence) {
+            if (Object.prototype.hasOwnProperty.call(frequence, key) && frequence[key] === maxFrequence) {
+                colonnesEgalesAUn[key] = maxFrequence;
+            }
+        }
+        const colonnesEntiers = Object.keys(colonnesEgalesAUn).map(key => parseInt(key));
+        // console.log(colonnesEntiers);
+        const max = Math.max(...colonnesEntiers);
+        console.log(max);
+
+
+        return max;
+
+    } catch (error) {
+        throw error;
+    }
 }
+
 async function mineraux2(litho) {
-    new Promise((resolve, reject) => {
+    try {
         let result = [];
-        let promises = [];
-        var indice = 0;
-        try {
-            litho.forEach(lith => {
-                // console.log(lith['mot1']);
-                indice = indice + 1;
-                promises.push(
-                    mineraux(lith, indice)
-                        .then(resulte => {
-                            indice = indice + 1;
-                            // console.log('litho'+indice+': '+resulte);
-                            console.log(resulte)
-                            result.push(resulte);
-                        })
-                )
-            });
-            Promise.all(promises)
-                .then(() => {
-                    resolve(result);
-                })
-                .catch(error => {
-                    console.log(error);
-                    reject(error);
-                })
-        } catch (error) {
-            reject(error);
+        let promises = litho.map(async (lith, index) => {
+            const res = await mineraux(lith, index + 1);
+            console.log('litho '+index+' : '+ res);
+            result.push(res);
+        });
+
+        await Promise.all(promises);
+
+        const frequence = {};
+        for (let element of result) {
+            if (frequence[element]) {
+                frequence[element]++;
+            } else {
+                frequence[element] = 1;
+            }
         }
 
+        let valeurLaPlusFrequent = result[0];
+        let maxFrequence = frequence[valeurLaPlusFrequent];
 
-    })
+        for (let element in frequence) {
+            if (frequence[element] > maxFrequence) {
+                valeurLaPlusFrequent = element;
+                maxFrequence = frequence[element];
+            }
+        }
+
+        console.log(valeurLaPlusFrequent);
+        const colonnesEgalesAUn = {};
+
+
+        for (const key in frequence) {
+            if (Object.prototype.hasOwnProperty.call(frequence, key) && frequence[key] === maxFrequence) {
+                colonnesEgalesAUn[key] = maxFrequence;
+            }
+        }
+        const colonnesEntiers = Object.keys(colonnesEgalesAUn).map(key => parseInt(key));
+        // console.log(colonnesEntiers);
+        const max = Math.max(...colonnesEntiers);
+        console.log(max);
+
+
+        return max;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
 }
+
 async function mot1_null(lith, base, prob) {
     return new Promise(async (resolve, reject) => {
         const mots2 = lith['mot2'].split(", ");
@@ -226,7 +288,6 @@ async function elementChimique(lithologie, subs) {
             if (await bd('bd10', subs) === true) {
                 let resultat = [];
                 for (let litho of lithologie) {
-                    console.log(litho)
                     if (litho['mot1'] === null) {
                         const res = await mot1_null(litho, 'bd12', [4, 3]);
                         resultat.push(res);
@@ -253,7 +314,6 @@ async function elementChimique(lithologie, subs) {
             }
             if (await bd('bd2', subs) === true) {
                 let resultat = [];
-                console.log('coucou');
                 for (let litho of lithologie) {
                     if (litho['mot1' === null]) {
                         const res = await mot1_null(litho, 'bd7', [4, 1]);
@@ -269,10 +329,10 @@ async function elementChimique(lithologie, subs) {
                 let resultat = [];
                 for (let litho of lithologie) {
                     if (litho['mot1' === null]) {
-                        const res = await mot1_null(litho, 'bd9', [4, 2]);
+                        const res = await mot1_null(litho, 'bd9', [4, 3]);
                         resultat.push(res);
                     } if (litho['mot1'] !== null) {
-                        const res = await mot1_not_null(litho, ['bd8', 'bd9'], [4, 2, 3, 1]);
+                        const res = await mot1_not_null(litho, ['bd8', 'bd9'], [4, 3, 3, 1]);
                         resultat.push(res);
                     }
                 }
@@ -280,13 +340,43 @@ async function elementChimique(lithologie, subs) {
             } else {
                 const error = 'aucune base ne correspond à la substance'
             }
-            resolve(result);
+            const frequence = {};
+            for (let element of result[0][0]) {
+                if (frequence[element]) {
+                    frequence[element]++;
+                } else {
+                    frequence[element] = 1;
+                }
+            }
+
+            let valeurLaPlusFrequent = result[0][0][0];
+            let maxFrequence = frequence[valeurLaPlusFrequent];
+
+            for (let element in frequence) {
+                if (frequence[element] > maxFrequence) {
+                    valeurLaPlusFrequent = element;
+                    maxFrequence = frequence[element];
+                }
+            }
+            const colonnesEgalesAUn = {};
+
+
+            for (const key in frequence) {
+                if (Object.prototype.hasOwnProperty.call(frequence, key) && frequence[key] === maxFrequence) {
+                    colonnesEgalesAUn[key] = maxFrequence;
+                }
+            }
+            const colonnesEntiers = Object.keys(colonnesEgalesAUn).map(key => parseInt(key));
+            // console.log(colonnesEntiers);
+            const max = Math.max(...colonnesEntiers);
+            console.log(max);
+
+            resolve(max);
         } catch (error) {
             reject(error)
         }
     })
 }
-
 
 async function getResult(litho, subs) {
     return new Promise((resolve, reject) => {
@@ -299,13 +389,14 @@ async function getResult(litho, subs) {
                         if (resulte === 3) {
                             return roche2(litho, subs)
                                 .then(result => {
+                                    console.log('3')
                                     resultat = result;
                                 })
                         }
                         if (resulte === 2) {
                             return mineraux2(litho)
                                 .then(result => {
-                                    console.log(result)
+                                    console.log('la solution finale ' + result)
                                     resultat = result
                                 })
                         }
@@ -313,6 +404,7 @@ async function getResult(litho, subs) {
                             return elementChimique(litho, subs)
                                 .then(result => {
                                     console.log(result);
+                                    console.log('1')
                                     resultat = result;
                                 })
                         }
@@ -333,8 +425,37 @@ async function getResult(litho, subs) {
         }
     });
 }
+async function getResultfinal(litho, subs) {
+    return new Promise((resolve, reject) => {
+        let res = [];
+        try {
+            let promises = [];
+            subs.forEach(sub => {
+                promises.push(
+                    getResult(litho, sub[0]['nom'])
+                        .then(resulte => {
+                            res.push(resulte);
+                        })
+                );
+            });
+            Promise.all(promises)
+                .then(() => {
+                    resolve(res);
+                })
+                .catch(error => {
+                    console.log(error);
+                    reject(error);
+                });
+
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    });
+}
 
 module.exports = {
     get_nature,
-    getResult
+    getResult,
+    getResultfinal
 };

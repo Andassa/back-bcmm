@@ -1,7 +1,6 @@
 //pour faire l'analyse de données par rapport au résultats des intersections
 const pool = require('../../database.js'); // Importez la configuration de la base de données
 
-//dropper la table emporaire 
 const getLitho = async (requete) => {
     return new Promise((resolve, reject) => {
         var request = "select mot1 , mot2 FROM geol g WHERE ST_Intersects(ST_SetSRID(ST_Buffer(ST_MakeValid(g.geom), 0), 4326),ST_SetSRID(ST_Buffer(ST_MakeValid(";

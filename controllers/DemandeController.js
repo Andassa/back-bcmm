@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { createMultiPolygon } = require('./service/Carre');
 const { getLitho } = require('./service/lithology');
-const { get_nature, getResult } = require('./service/roche');
+const { get_nature, getResult,getResultfinal } = require('./service/roche');
 const { getSubs_byId,get_All_Subs_by_id } = require('./service/substance');
 const pool = require('../database.js'); // Importez la configuration de la base de données
 
@@ -43,10 +43,11 @@ router.post('/getDonneDemande', async(req, res) => {
             const req = await createMultiPolygon(listeCarre);
             const lith = await getLitho(req);
             const subs = await get_All_Subs_by_id(tableauDemande['choixSubs']);
-            const result = await getResult(lith, subs[0][0]['nom']);
+            // const result = await getResult(lith, subs[0][0]['nom']);
+            const result = await getResultfinal(lith, subs);
             console.log(result);
             console.log(lith);
-            return res.json(tableauDemande);
+            return res.json(result);
         } else {
             return res.json({'error':'tableau vide'});
         }

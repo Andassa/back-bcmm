@@ -158,7 +158,7 @@ async function mineraux(mots, indice) {
             }
         }
 
-        console.log(frequence);
+        // console.log(frequence);
         const colonnesEgalesAUn = {};
 
 
@@ -170,7 +170,7 @@ async function mineraux(mots, indice) {
         const colonnesEntiers = Object.keys(colonnesEgalesAUn).map(key => parseInt(key));
         // console.log(colonnesEntiers);
         const max = Math.max(...colonnesEntiers);
-        console.log(max);
+        // console.log(max);
 
 
         return max;
@@ -210,7 +210,7 @@ async function mineraux2(litho) {
             }
         }
 
-        console.log(valeurLaPlusFrequent);
+        // console.log(valeurLaPlusFrequent);
         const colonnesEgalesAUn = {};
 
 
@@ -222,7 +222,7 @@ async function mineraux2(litho) {
         const colonnesEntiers = Object.keys(colonnesEgalesAUn).map(key => parseInt(key));
         // console.log(colonnesEntiers);
         const max = Math.max(...colonnesEntiers);
-        console.log(max);
+        // console.log(max);
 
 
         return max;
@@ -297,12 +297,14 @@ async function elementChimique(lithologie, subs) {
                         resultat.push(res);
                     }
                 }
+                console.log('bd10');
+                console.log(resultat);
                 result.push(resultat);
             }
             if (await bd('bd1', subs) === true) {
                 let resultat = [];
                 for (let litho of lithologie) {
-                    if (litho['mot1' === null]) {
+                    if (litho['mot1'] === null) {
                         const res = await mot1_null(litho, 'bd5', [4, 2]);
                         resultat.push(res);
                     } if (litho['mot1'] !== null) {
@@ -310,12 +312,14 @@ async function elementChimique(lithologie, subs) {
                         resultat.push(res);
                     }
                 }
+                console.log('bd1');
+                console.log(resultat);
                 result.push(resultat);
             }
             if (await bd('bd2', subs) === true) {
                 let resultat = [];
                 for (let litho of lithologie) {
-                    if (litho['mot1' === null]) {
+                    if (litho['mot1'] === null) {
                         const res = await mot1_null(litho, 'bd7', [4, 1]);
                         resultat.push(res);
                     } if (litho['mot1'] !== null) {
@@ -323,12 +327,15 @@ async function elementChimique(lithologie, subs) {
                         resultat.push(res);
                     }
                 }
+                console.log('bd2');
+                console.log(resultat);
                 result.push(resultat);
             }
             if (await bd('bd3', subs) === true) {
                 let resultat = [];
+                console.log('bd3');
                 for (let litho of lithologie) {
-                    if (litho['mot1' === null]) {
+                    if (litho['mot1'] === null) {
                         const res = await mot1_null(litho, 'bd9', [4, 3]);
                         resultat.push(res);
                     } if (litho['mot1'] !== null) {
@@ -336,10 +343,14 @@ async function elementChimique(lithologie, subs) {
                         resultat.push(res);
                     }
                 }
+                console.log(resultat);
                 result.push(resultat);
             } else {
                 const error = 'aucune base ne correspond à la substance'
+                console.log(error);
             }
+            console.log('result : ');
+            console.log(result);
             const frequence = {};
             for (let element of result[0][0]) {
                 if (frequence[element]) {
@@ -369,7 +380,7 @@ async function elementChimique(lithologie, subs) {
             const colonnesEntiers = Object.keys(colonnesEgalesAUn).map(key => parseInt(key));
             // console.log(colonnesEntiers);
             const max = Math.max(...colonnesEntiers);
-            console.log(max);
+            console.log('solution EL '+max);
 
             resolve(max);
         } catch (error) {
@@ -389,22 +400,22 @@ async function getResult(litho, subs) {
                         if (resulte === 3) {
                             return roche2(litho, subs)
                                 .then(result => {
-                                    console.log('3')
+                                    // console.log('3')
                                     resultat = result;
                                 })
                         }
                         if (resulte === 2) {
                             return mineraux2(litho)
                                 .then(result => {
-                                    console.log('la solution finale ' + result)
+                                    // console.log('la solution finale ' + result)
                                     resultat = result
                                 })
                         }
                         if (resulte === 1) {
                             return elementChimique(litho, subs)
                                 .then(result => {
-                                    console.log(result);
-                                    console.log('1')
+                                    // console.log(result);
+                                    // console.log('1')
                                     resultat = result;
                                 })
                         }

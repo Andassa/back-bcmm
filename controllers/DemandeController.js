@@ -45,8 +45,8 @@ router.post('/getDonneDemande', async(req, res) => {
             const subs = await get_All_Subs_by_id(tableauDemande['choixSubs']);
             // const result = await getResult(lith, subs[0][0]['nom']);
             const result = await getResultfinal(lith, subs);
-            console.log(result);
             console.log(lith);
+            console.log(result);
             return res.json(result);
         } else {
             return res.json({'error':'tableau vide'});

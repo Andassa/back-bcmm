@@ -33,20 +33,20 @@ export default function ImgMediaCard() {
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        window.location.href = '/login';
         try {
-            const response = await axiosInstance.post('http://localhost:3000/register', formData);
-            if (response.data.hasOwnProperty('erreur')) {
-                setMessageErreur(response.data.erreur.message);
-            } else {
-                // console.log(response.data);
+            // const response = await axiosInstance.post('http://localhost:3000/register', formData);
+            // if (response.data.hasOwnProperty('erreur')) {
+            //     setMessageErreur(response.data.erreur.message);
+            // } else {
+            //     // console.log(response.data);
                 window.location.href = '/login';
-            }
+            // }
         } catch (error) {
             console.error('Error sending form data:', error);
         }
     };
-    
+
 
     useEffect(() => {
         try {
@@ -73,7 +73,7 @@ export default function ImgMediaCard() {
 
     const defaultProps = {
         options: fonction,
-        getOptionLabel: (option) =>option.fonction.toString()
+        getOptionLabel: (option) => option.fonction.toString()
     }
 
     const CustomPaper = styled(Paper)({
@@ -83,10 +83,10 @@ export default function ImgMediaCard() {
 
     const handleInputChange = (event, newInputValue) => {
         setChoixFonction(newInputValue)
-        const formDataa= {...formData, "fonction": newInputValue}
+        const formDataa = { ...formData, "fonction": newInputValue }
         setFormData(formDataa);
     };
-    
+
     return (
         <Card sx={{ maxWidth: 800, alignItems: 'center', padding: '20px' }}>
             <Typography variant="h3" gutterBottom style={{ color: 'rgb(43, 102, 147)', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '50px' }} >
@@ -141,7 +141,7 @@ export default function ImgMediaCard() {
                                     name='fonction'
                                     {...params}
                                     label="fonction"
-                                    
+
                                 />
                             )}
                             sx={{ m: 0, minWidth: 170, display: 'flex' }}
@@ -167,7 +167,7 @@ export default function ImgMediaCard() {
                 <Typography style={{ color: 'rgb(37, 103, 169)', display: 'flex', alignItems: 'center', justifyContent: 'center' }} variant="overline" display="block" gutterBottom>
                     {messageErreur}
                 </Typography>
-                <Button type="submit" variant="contained" style={{ float: 'right' }}>se connecter</Button>
+                <Button type="submit" variant="contained" onClick={handleSubmit } style={{ float: 'right' }}>se connecter</Button>
             </form>
             <CardActions>
                 <Button size="small" onClick={retour} >retour</Button>

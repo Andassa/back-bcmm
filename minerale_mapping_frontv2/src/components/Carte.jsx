@@ -14,11 +14,28 @@ import Alert from '@mui/material/Alert';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import { styled } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import CloseIcon from '@mui/icons-material/Close';
+import Box from '@mui/material/Box';
+
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+
+import TableResultat from './component/tableResultat';
+
 
 import './../App.css';
 
 
-function MapPage() {
+function MapPage(props) {
   const [selectDecoupe, setSelectDecoupe] = useState([]);
   const [decoupeAffiche, setDecoupeAffiche] = useState([]);
   const [listeCentre, setListeCentre] = useState([]);
@@ -28,7 +45,16 @@ function MapPage() {
   const [nomPersonne, setNomPersonne] = useState('');
   const [selectPermis, setSelectPermis] = useState('');
   const [confirmation, setConfirmation] = useState({});
-  const [resultat, setResultat] = useState();
+  const [resultat, setResultat] = useState([]);
+
+  const [misokatra, setMisokatra] = React.useState(false);
+
+  const handleClickOpenModal = () => {
+    setMisokatra(true);
+  };
+  const handleCloseModal = () => {
+    setMisokatra(false);
+  };
 
   const [ouvert, setOuvert] = React.useState(false);
 
@@ -146,7 +172,24 @@ function MapPage() {
     }
   }, [confirmation]);
   //// fin envoie de données vers la base 
+  useEffect(() => {
+    if (resultat.length !== 0) {
+      handleClickOpenModal();
+    }
+  }, [resultat])
 
+  const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+    '& .MuiDialogContent-root': {
+      padding: theme.spacing(2),
+    },
+    '& .MuiDialogActions-root': {
+      padding: theme.spacing(1),
+    },
+  }));
+  const [selectedValue, setSelectedValue] = useState('5');
+  const handleChange = (event) => {
+    setSelectedValue(event.target.value);
+  };
   const boutton = (
     <React.Fragment>
       <Button variant="contained" endIcon={<SendIcon />} size='large'
@@ -162,24 +205,77 @@ function MapPage() {
       >
         <CircularProgress color="inherit" />
       </Backdrop>
+      <BootstrapDialog
+        onClose={handleCloseModal}
+        aria-labelledby="customized-dialog-title"
+        open={misokatra}
+        maxWidth="md"
+      >
+        <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+          Les Résultats de la vérification
+        </DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={handleCloseModal}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent dividers>
+          <Box sx={{ flexGrow: 1 }} style={{ height: '500px', width: '500px' }}>
+            <TableResultat selectedValue={selectedValue} resultat={resultat} />
+          </Box>
+        </DialogContent>
+      </BootstrapDialog>
     </React.Fragment>
   );
 
+  const {taille} = props;
+  const [style1, setStyle1] = useState({
+    width: "57vw", height: "90vh", position: "fixed"
+  })
+  const [style2, setStyle2] = useState({
+    width: "40vw", height: '100vh', overflowY: 'scroll', marginLeft: '57vw'
+  })
+  useEffect(()=>{
+    if (taille===0) {
+      setStyle1({width: "45vw", height: "90vh", position: "fixed"})
+      setStyle2({width: "40vw", height: '100vh', overflowY: 'scroll', marginLeft: '45vw'})
+    }
+  },[taille])
 
   return (
     <div>
       <div style={{ display: "flex", flexDirection: "row", width: "97vw", height: "100vh" }} >
-        <div style={{ width: "57vw", height: "90vh", position: "fixed" }}>
+        <div style={style1}>
           <CarteLeaflet decoupeAffiche={decoupeAffiche} listeCarre={listeCarre} carreSelect={carreSelect} />
         </div>
-        <div style={{ width: "40vw", height: '100vh', overflowY: 'scroll', marginLeft: '58vw' }}>
+        <div style={style2}>
           <div style={{ padding: "15px" }} >
             <Typography variant="h5" gutterBottom style={{ color: 'blue' }} textAlign="center">
-              Les informations de la demande de permis
+              Les informations sur le permis
             </Typography>
             <hr />
             <div style={{ padding: '30px' }}>
               <InputInfo nomPersonne={nomPersonne} setNomPersonne={setNomPersonne} selectPermis={selectPermis} setSelectPermis={setSelectPermis} />
+              <FormControl style={{ marginTop: '20px' }}>
+                <FormLabel id="demo-row-radio-buttons-group-label"></FormLabel>
+                <RadioGroup
+                  row
+                  aria-labelledby="demo-row-radio-buttons-group-label"
+                  name="row-radio-buttons-group"
+                  value={selectedValue}
+                  onChange={handleChange}
+                >
+                  <FormControlLabel value='5' control={<Radio />} label="Octroi" />
+                  <FormControlLabel value='10' control={<Radio />} label="Renouvellement" />
+                </RadioGroup>
+              </FormControl>
             </div>
           </div>
           <AccordeonDetailDecoupe selectDecoupe={selectDecoupe} setSelectDecoupe={setSelectDecoupe} setDecoupeAffiche={setDecoupeAffiche} />
@@ -198,7 +294,7 @@ function MapPage() {
                 // onClose={handleClose}
                 severity="error"
                 variant="filled"
-                sx={{ width: '100%' }}
+                sx={{ width: '100%', padding: '25px' }}
               >
                 ERREUR : {confirmation.error}
               </Alert>

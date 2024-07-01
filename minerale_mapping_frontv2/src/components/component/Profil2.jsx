@@ -23,9 +23,9 @@ export default function RecipeReviewCard(props) {
         avatar={
           <Avatar alt={utilisateur?.nom + ' ' + utilisateur?.prenom} src='assets/images/user.png' style={{ height: '125px', width: '125px', marginLeft: '130px' }} />
         }
-        // action={
-        //   // <Button onClick={handleModif} >Modifier</Button>
-        // }
+        action={
+          <Button onClick={handleModif} >Modifier</Button>
+        }
       />
       <CardContent>
         <Box sx={{
@@ -36,7 +36,7 @@ export default function RecipeReviewCard(props) {
           <TextField
             id="standard-read-only-input"
             label="Nom"
-            value={utilisateur.nom}
+            value={'Randriamanalina'}
             InputProps={{
               readOnly: true,
             }}

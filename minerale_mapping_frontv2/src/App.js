@@ -9,6 +9,8 @@ import Welcome from "./components/Welcome";
 import Login from "./components/Login";
 import Inscription from "./components/Inscription";
 import Carte from "./components/Base";
+import Admin from "./components/BaseAdmin";
+
   
 function App() {
   return (
@@ -21,6 +23,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/inscription" element={<Inscription />} />
         <Route path="/map" element={<Carte />} />
+        <Route path="/dashboard" element={<Admin />} />
         </Routes>
       </Router>
     </>

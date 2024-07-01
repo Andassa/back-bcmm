@@ -34,7 +34,16 @@ export default function ImgMediaCard() {
                     setMessageErreur(response.data);
                 }
                 // console.log(response.data);
-                window.location.href = '/map';
+                console.log(response.data);
+                // if (response.data.user.autorisation) {
+                    
+                // }
+                if (response.data==='admin') {
+                window.location.href = '/dashboard';
+                }
+                else{
+                    window.location.href = '/map';
+                }
             }
         } catch (error) {
             console.error('Error sending form data:', error);
@@ -77,7 +86,7 @@ export default function ImgMediaCard() {
                 <Button type="submit" variant="contained" style={{ float: 'right' }}>se connecter</Button>
             </form>
             <CardActions>
-                <Button size="small" onClick={inscription} >Demande d'inscription</Button>
+                <Button size="small" onClick={inscription} >Inscription</Button>
             </CardActions>
         </Card>
     );

@@ -20,11 +20,12 @@ import axiosInstance from '../Lesmomdules/axiosInstance';
 
 import Carte from './Carte';
 import Profil from './component/Profil';
+import Profil2 from './component/Profil2';
 import Modifier from './component/Modifier';
 
 const pages = ['Carte'];
 // const pages = ['Ajout de donnée'];
-const settings = ['Profil', 'Logout'];
+const settings = ['Profil', 'Déconnexion'];
 
 
 function HideOnScroll(props) {
@@ -96,7 +97,11 @@ export default function HideAppBar(props) {
     const profileComponent = (<div style={{ marginLeft: '650px', marginTop: '50px' }} ><Profil utilisateur={utilisateur} setUtilisateur={setUtilisateur} modifier={modifier} setModifier={setModifier} /></div>);
     const handleSetting = (setting) => {
         console.log(setting);
-        setPejy(profileComponent);
+        if (setting==='Profil') {
+            setPejy(profileComponent);
+        }else{
+            window.location.href = '/login';
+        }
     }
     useEffect(() => {
         if (utilisateur !== null) {

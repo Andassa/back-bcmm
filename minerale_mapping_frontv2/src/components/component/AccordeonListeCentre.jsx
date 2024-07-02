@@ -25,17 +25,17 @@ export default function ControlledAccordions(props) {
   const { decoupeAffiche } = props;
   const { setListeCarre } = props;
 
-  useEffect(() => {
-    if (decoupeAffiche.length != 0) {
-      setAutorisation(true);
-    }else{
-      setCarreSelect([]);
-      setListeCentre([]);
-      setListeCarre([]); 
-      setAutorisation(false);
-    }
-  }, [decoupeAffiche])
-  const handleError = (event)=>{ setAutorisation(false); }
+  // useEffect(() => {
+  //   if (decoupeAffiche.length != 0) {
+  //     setAutorisation(true);
+  //   }else{
+  //     setCarreSelect([]);
+  //     setListeCentre([]);
+  //     setListeCarre([]); 
+  //     setAutorisation(true);
+  //   }
+  // }, [decoupeAffiche])
+  const handleError = (event)=>{ setAutorisation(true); }
   const handleFileUpload = (event) => {
     if (autorisation === true) {
       const file = event.target.files[0];
@@ -62,7 +62,7 @@ export default function ControlledAccordions(props) {
       };
       reader.readAsText(file);
     } else {
-      setAutorisation(false);
+      setAutorisation(true);
     }
 
   };

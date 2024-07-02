@@ -60,10 +60,9 @@ function MapPage(props) {
 
   /////formation de carrée venant des listes de centre////
   useEffect(() => {
-    if (selectDecoupe && listeCentre) {
-      const decoupe = selectDecoupe.filter(sel => sel.selectionne === 'true');
-      if (decoupe.length > 0 && listeCentre.length > 0) {
-        const donnees = { 'decoupes': decoupe, 'centre': listeCentre };
+    if (listeCentre) {
+      if (listeCentre.length > 0) {
+        const donnees = { 'centre': listeCentre };
         fetch('http://localhost:3000/formeCarre', {
           method: 'POST',
           headers: {
@@ -85,7 +84,7 @@ function MapPage(props) {
           });
       }
     }
-  }, [selectDecoupe, listeCentre])
+  }, [listeCentre])
   ///// fin formation de carre///
 
   /////debut verification de valeur////
@@ -102,14 +101,14 @@ function MapPage(props) {
       setConfirmation({ error: ' liste de carré vide' });
       return confirmation;
     }
-    if (listeCarre.length > 0) {
-      for (let i = 0; i < listeCarre.length; i++) {
-        if (listeCarre[i]['etat'] === 1) {
-          setConfirmation({ error: ' des carrés hors decoupe' });
-          return confirmation;
-        }
-      }
-    }
+    // if (listeCarre.length > 0) {
+    //   for (let i = 0; i < listeCarre.length; i++) {
+    //     if (listeCarre[i]['etat'] === 1) {
+    //       setConfirmation({ error: ' des carrés hors decoupe' });
+    //       return confirmation;
+    //     }
+    //   }
+    // }
     if (choixSubs.length === 0) {
       setConfirmation({ error: ' pas de substance ' })
       return confirmation;
@@ -278,7 +277,7 @@ function MapPage(props) {
               </FormControl>
             </div>
           </div>
-          <AccordeonDetailDecoupe selectDecoupe={selectDecoupe} setSelectDecoupe={setSelectDecoupe} setDecoupeAffiche={setDecoupeAffiche} />
+          {/* <AccordeonDetailDecoupe selectDecoupe={selectDecoupe} setSelectDecoupe={setSelectDecoupe} setDecoupeAffiche={setDecoupeAffiche} /> */}
           <AccordeonListeCentre listeCentre={listeCentre} setListeCarre={setListeCarre} setListeCentre={setListeCentre} setCarreSelect={setCarreSelect} decoupeAffiche={decoupeAffiche} />
           <ListeSubstance setChoixSubs={setChoixSubs} />
           <div style={{ float: 'right' }} >

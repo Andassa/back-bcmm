@@ -8,7 +8,8 @@ router.post('/formeCarre', async (req, res) => {
     const tableauJSON = req.body.donnees;
     try {
         if (tableauJSON.length != 0) {
-            const booleanCarre = await listeCarre(tableauJSON['centre'], tableauJSON['decoupes']);
+            var decoupe = [ { indicatif: 'G49', nom: 'BEREVO', selectionne: 'true' } ];
+            const booleanCarre = await listeCarre(tableauJSON['centre'], decoupe);
             // console.log(booleanCarre)
             return res.json(booleanCarre);
         }

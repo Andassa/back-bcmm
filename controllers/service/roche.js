@@ -185,7 +185,7 @@ async function mineraux2(litho) {
         let result = [];
         let promises = litho.map(async (lith, index) => {
             const res = await mineraux(lith, index + 1);
-            console.log('litho '+index+' : '+ res);
+            console.log('litho ' + index + ' : ' + res);
             result.push(res);
         });
 
@@ -280,6 +280,81 @@ async function mot1_not_null(litho, base, prob) {
         }
     })
 }
+// async function getFrequent() {
+async function getFrequent(tableau) {
+    // const tableau = [1,2,3,4,1,2,1,2,1,4,2,2];
+    return new Promise(async (resolve, reject) => {
+        try {
+            /// forme de frequence : {2:1 , 3:2}
+            /// 2 = prob ,1 = nombre de fréquence
+            const frequence = {};
+            for (let element of tableau) {
+                if (frequence[element]) {
+                    frequence[element]++;
+                } else {
+                    frequence[element] = 1;
+                }
+            }
+            console.log(frequence);
+            let valeurLaplusFrequente = tableau[0];
+            let maxFrequence = frequence[valeurLaplusFrequente];
+            for (let element in frequence) {
+                if (frequence[element] > maxFrequence) {
+                    valeurLaplusFrequente = element;
+                    maxFrequence = frequence[element];
+                }
+            }
+            const getMax = {};
+            for (let key in frequence) {
+                if (Object.prototype.hasOwnProperty.call(frequence, key) && frequence[key] === maxFrequence) {
+                    getMax[key] = maxFrequence[key];
+                }
+            }
+            const lesProb = Object.keys(getMax).map(key => parseInt(key));
+            const max = Math.max(...lesProb);
+            resolve(max);
+        } catch (error) {
+            reject(error)
+        }
+    })
+}
+// avoir la frequence de chaque litho dans un BD 
+async function getFrequentLitho(tableau) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            // const tableau = [[1, 2, 3, 4], [1, 2, 2, 4], [2]];
+            let getFreq1 = [];
+            for (let i = 0; i < tableau.length; i++) {
+                const freq = await getFrequent(tableau[i]);
+                getFreq1.push(freq);
+            }
+            const resultat = await getFrequent(getFreq1);
+            resolve(resultat)
+        } catch (error) {
+            reject(error);
+        }
+    })
+}
+async function getFrequentLithoBD(tableau) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            // const tableau = [
+            //     [[2, 2], [1, 1, 1], [2]],//2
+            //     [[1, 1], [1, 1, 1], [4]],//1
+            //     [[1, 1], [3, 3, 1], [3]]//3
+            // ];
+            let getFreq1 = [];
+            for (let i = 0; i < tableau.length; i++) {
+                const freq = await getFrequentLitho(tableau[i]);
+                getFreq1.push(freq);
+            }
+            const resultat = await getFrequent(getFreq1);
+            resolve(resultat)
+        } catch (error) {
+            reject(error);
+        }
+    })
+}
 
 async function elementChimique(lithologie, subs) {
     return new Promise(async (resolve, reject) => {
@@ -351,38 +426,11 @@ async function elementChimique(lithologie, subs) {
             }
             console.log('result : ');
             console.log(result);
-            const frequence = {};
-            for (let element of result[0][0]) {
-                if (frequence[element]) {
-                    frequence[element]++;
-                } else {
-                    frequence[element] = 1;
-                }
-            }
-
-            let valeurLaPlusFrequent = result[0][0][0];
-            let maxFrequence = frequence[valeurLaPlusFrequent];
-
-            for (let element in frequence) {
-                if (frequence[element] > maxFrequence) {
-                    valeurLaPlusFrequent = element;
-                    maxFrequence = frequence[element];
-                }
-            }
-            const colonnesEgalesAUn = {};
-
-
-            for (const key in frequence) {
-                if (Object.prototype.hasOwnProperty.call(frequence, key) && frequence[key] === maxFrequence) {
-                    colonnesEgalesAUn[key] = maxFrequence;
-                }
-            }
-            const colonnesEntiers = Object.keys(colonnesEgalesAUn).map(key => parseInt(key));
-            // console.log(colonnesEntiers);
-            const max = Math.max(...colonnesEntiers);
-            console.log('solution EL '+max);
-
-            resolve(max);
+            
+            const test = await getFrequentLithoBD(result);
+            console.log(test);
+            
+            resolve(test);
         } catch (error) {
             reject(error)
         }

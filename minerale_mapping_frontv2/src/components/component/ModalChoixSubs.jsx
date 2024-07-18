@@ -16,6 +16,10 @@ import Grid from '@mui/material/Grid';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 
+import TextField from '@mui/material/TextField';
+
+
+
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
         padding: theme.spacing(2),
@@ -27,7 +31,10 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 
 export default function CustomizedDialogs(props) {
     const [open, setOpen] = React.useState(false);
-    const {setSelectChoixSubs} = props;
+    const { setSelectChoixSubs } = props;
+    const [recherche, setRecherche] = useState('');
+
+    
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -50,6 +57,7 @@ export default function CustomizedDialogs(props) {
         });
     };
     const [subs1, setSubs1] = useState(null);
+    const [rechercheSubs , setRechercheSubs]= useState([]);
     useEffect(() => {
         // Fonction pour effectuer la requête GET
         const fetchData = async () => {
@@ -59,6 +67,8 @@ export default function CustomizedDialogs(props) {
                     window.location.href = '/login';
                 }
                 setSubs1(response.data.substances);
+                setRechercheSubs(response.data.substances);
+                
 
             } catch (error) {
                 console.error('Erreur lors de la requête GET :', error);
@@ -68,12 +78,22 @@ export default function CustomizedDialogs(props) {
     }, []); // Le tableau vide en tant que deuxième argument assure que cette effect est exécutée une seule fois après le rendu initial.
 
     let coche = [];
+
+    const handleRecherche = (event) => {
+        setRecherche(event.target.value);
+        const filteredSubs1 = subs1.filter(sub =>
+            sub.nom.toLowerCase().includes(event.target.value.toLowerCase())
+          );
+        
+        setRechercheSubs(filteredSubs1)
+    }
+
     const handelConfirmation = () => {
         const checkedList = Object.keys(checkedItems).filter(key => checkedItems[key]);
         checkedList.forEach(checkedItem =>
             coche.push(subs1.filter(item => item.id == checkedItem)[0])
         )
-        if(coche.length==checkedList.length){
+        if (coche.length == checkedList.length) {
             setSelectChoixSubs(coche);
         }
         setOpen(false);
@@ -91,6 +111,15 @@ export default function CustomizedDialogs(props) {
             >
                 <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
                     séléctionner d'autres substances à ajouter
+                    <TextField
+                        id="standard-search"
+                        label="rechercher des substances"
+                        type="search"
+                        variant="standard"
+                        style={{ width: "100%" }}
+                        value={recherche}
+                        onChange={handleRecherche}
+                    />
                 </DialogTitle>
                 <IconButton
                     aria-label="close"
@@ -107,7 +136,7 @@ export default function CustomizedDialogs(props) {
                 <DialogContent dividers>
                     <Box sx={{ flexGrow: 1 }} style={{ height: '500px', overflowY: 'scroll', }}>
                         <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 16 }}>
-                            {subs1 && subs1.map((sub) => (
+                            {rechercheSubs && rechercheSubs.map((sub) => (
                                 <Grid item xs={1} sm={3} md={4} key={sub.id}>
                                     <FormControlLabel control={
                                         <Checkbox

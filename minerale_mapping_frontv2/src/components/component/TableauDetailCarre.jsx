@@ -23,8 +23,10 @@ export default function StickyHeadTable(props) {
         setRowsPerPage(+event.target.value);
         setPage(0);
     };
-    async function handleSelect(index) {
-        setCarreSelect([listeCentre[index]])
+    async function handleSelect(index,page) {
+        const p = page*10;
+        const index1 = p+index;
+        setCarreSelect([listeCentre[index1]])
     };
     return (
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -33,7 +35,6 @@ export default function StickyHeadTable(props) {
                 {/* <caption>A basic table example with a caption</caption> */}
                     <TableHead>
                         <TableRow>
-                            <TableCell >id</TableCell>
                             <TableCell align="center">x</TableCell>
                             <TableCell align="center">y</TableCell>
                             <TableCell align="center">longitude</TableCell>
@@ -47,13 +48,12 @@ export default function StickyHeadTable(props) {
                             .map((row, index) => {
                                 return (
                                     <TableRow hover role="checkbox" tabIndex={-1} key={index}>
-                                        <TableCell align="center" >{index}</TableCell>
                                         <TableCell align="center" >{row.x}</TableCell>
                                         <TableCell align="center" >{row.y}</TableCell>
                                         <TableCell align="center" >{row.lng}</TableCell>
                                         <TableCell align="center" >{row.lat}</TableCell>
                                         <TableCell align="center">
-                                            <Link href="#" onClick={() => handleSelect(index)} underline="hover">
+                                            <Link href="#" onClick={() => handleSelect(index,page)} underline="hover">
                                                 {'Afficher'}
                                             </Link>
                                         </TableCell>

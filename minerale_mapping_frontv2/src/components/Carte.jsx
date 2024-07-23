@@ -30,6 +30,7 @@ import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 
 import TableResultat from './component/tableResultat';
+import Pdf from './component/PdfExport';
 
 
 import './../App.css';
@@ -55,6 +56,7 @@ function MapPage(props) {
   const handleCloseModal = () => {
     setMisokatra(false);
   };
+  const [etatPermis, setEtatPermis] = useState((<div></div>))
 
   const [ouvert, setOuvert] = React.useState(false);
 
@@ -177,6 +179,7 @@ function MapPage(props) {
     }
   }, [resultat])
 
+
   const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
       padding: theme.spacing(2),
@@ -185,7 +188,7 @@ function MapPage(props) {
       padding: theme.spacing(1),
     },
   }));
-  const [selectedValue, setSelectedValue] = useState('5');
+  const [selectedValue, setSelectedValue] = useState('100');
   const handleChange = (event) => {
     setSelectedValue(event.target.value);
   };
@@ -212,6 +215,8 @@ function MapPage(props) {
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
           Les Résultats de la vérification
+          <Pdf />
+
         </DialogTitle>
         <IconButton
           aria-label="close"
@@ -234,19 +239,43 @@ function MapPage(props) {
     </React.Fragment>
   );
 
-  const {taille} = props;
+  const { taille } = props;
   const [style1, setStyle1] = useState({
     width: "57vw", height: "90vh", position: "fixed"
   })
   const [style2, setStyle2] = useState({
     width: "40vw", height: '100vh', overflowY: 'scroll', marginLeft: '57vw'
   })
-  useEffect(()=>{
-    if (taille===0) {
-      setStyle1({width: "45vw", height: "90vh", position: "fixed"})
-      setStyle2({width: "40vw", height: '100vh', overflowY: 'scroll', marginLeft: '45vw'})
+  useEffect(() => {
+    if (taille === 0) {
+      setStyle1({ width: "45vw", height: "90vh", position: "fixed" })
+      setStyle2({ width: "40vw", height: '100vh', overflowY: 'scroll', marginLeft: '45vw' })
     }
-  },[taille])
+  }, [taille])
+  useEffect(() => {
+    if (selectPermis === 3 || selectPermis === 2) {
+      setEtatPermis(
+        <FormControl style={{ marginTop: '20px' }}>
+          <FormLabel id="demo-row-radio-buttons-group-label"></FormLabel>
+          <RadioGroup
+            row
+            aria-labelledby="demo-row-radio-buttons-group-label"
+            name="row-radio-buttons-group"
+            value={selectedValue}
+            onChange={handleChange}
+            required
+          >
+            <FormControlLabel value='5' control={<Radio />} label="Octroi" />
+            <FormControlLabel value='10' control={<Radio />} label="Renouvellement" />
+          </RadioGroup>
+        </FormControl>
+      )
+    } else {
+      setEtatPermis((<div></div>))
+      setSelectedValue('100')
+
+    }
+  }, [selectPermis, selectedValue])
 
   return (
     <div>
@@ -262,19 +291,7 @@ function MapPage(props) {
             <hr />
             <div style={{ padding: '30px' }}>
               <InputInfo nomPersonne={nomPersonne} setNomPersonne={setNomPersonne} selectPermis={selectPermis} setSelectPermis={setSelectPermis} />
-              <FormControl style={{ marginTop: '20px' }}>
-                <FormLabel id="demo-row-radio-buttons-group-label"></FormLabel>
-                <RadioGroup
-                  row
-                  aria-labelledby="demo-row-radio-buttons-group-label"
-                  name="row-radio-buttons-group"
-                  value={selectedValue}
-                  onChange={handleChange}
-                >
-                  <FormControlLabel value='5' control={<Radio />} label="Octroi" />
-                  <FormControlLabel value='10' control={<Radio />} label="Renouvellement" />
-                </RadioGroup>
-              </FormControl>
+              {etatPermis}
             </div>
           </div>
           {/* <AccordeonDetailDecoupe selectDecoupe={selectDecoupe} setSelectDecoupe={setSelectDecoupe} setDecoupeAffiche={setDecoupeAffiche} /> */}

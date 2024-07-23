@@ -21,7 +21,7 @@ const Item = styled(Paper)(({ theme }) => ({
     color: theme.palette.text.secondary,
 }));
 export default function OutlinedCard(props) {
-    const [selectChoixSubs, setSelectChoixSubs] = useState(null);
+    const [selectChoixSubs, setSelectChoixSubs] = useState([]);
     const [checkedItems, setCheckedItems] = useState({});
     const {setChoixSubs } = props;
 
@@ -54,7 +54,7 @@ export default function OutlinedCard(props) {
                 <React.Fragment>
                     <CardContent>
                         <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                            Substances séléctionnés
+                            Substances séléctionnées : {selectChoixSubs.length}
                         </Typography>
 
                     </CardContent>

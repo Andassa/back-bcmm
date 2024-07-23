@@ -35,16 +35,6 @@ function createData(subs, res, prob) {
     return { subs, prob };
 }
 
-const rows = [
-    createData('Ilménite', 'élevée'),
-    createData('Béryl', 'élevée'),
-    createData('Grenat', 'moyenne'),
-    createData('Feldspath', 'moyenne'),
-    createData('Chrome', 'faible'),
-    createData('Nickel', 'nulle'),
-    createData('Hématite', 'nulle'),
-    createData('Cuivre', 'nulle')
-];
 
 export default function StickyHeadTable(props) {
     const {selectedValue} = props;

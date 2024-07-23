@@ -5,29 +5,32 @@ import {
   Routes,
   Route
 } from "react-router-dom";
+import ReactDOM from 'react-dom';
+
 import Welcome from "./components/Welcome";
 import Login from "./components/Login";
 import Inscription from "./components/Inscription";
 import Carte from "./components/Base";
 import Admin from "./components/BaseAdmin";
 
-  
+
 function App() {
   return (
     <>
       {/* This is the alias of BrowserRouter i.e. Router */}
       <Router>
         <Routes>
-        <Route path="/" element={<Welcome />} />
-        <Route path="/welcome" element={<Welcome />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/inscription" element={<Inscription />} />
-        <Route path="/map" element={<Carte />} />
-        <Route path="/dashboard" element={<Admin />} />
+          <Route path="/" element={<Welcome />} />
+          <Route path="/welcome" element={<Welcome />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/inscription" element={<Inscription />} />
+          <Route path="/map" element={<Carte />} />
+          <Route path="/dashboard" element={<Admin />} />
         </Routes>
       </Router>
     </>
   );
 }
-  
+ReactDOM.render(<App />, document.getElementById('root'));
+
 export default App;

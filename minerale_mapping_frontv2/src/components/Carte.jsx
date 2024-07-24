@@ -47,6 +47,7 @@ function MapPage(props) {
   const [selectPermis, setSelectPermis] = useState('');
   const [confirmation, setConfirmation] = useState({});
   const [resultat, setResultat] = useState([]);
+  const [nomFichier, setNomFichier] = useState('');
 
   const [misokatra, setMisokatra] = React.useState(false);
 
@@ -148,7 +149,7 @@ function MapPage(props) {
         setOuvert(false);
       }
       handleOuvert();
-      const donneesTableau = { 'nomPersonne': nomPersonne, 'selectPermis': selectPermis, 'listeCarre': listeCarre, 'choixSubs': choixSubs };
+      const donneesTableau = { 'nomPersonne': nomPersonne, 'selectPermis': selectPermis.id, 'listeCarre': listeCarre, 'choixSubs': choixSubs };
       fetch('http://localhost:3000/getDonneDemande', {
         method: 'POST',
         headers: {
@@ -164,7 +165,6 @@ function MapPage(props) {
         })
         .then(data => {
           handleFerme();
-          console.log(data);
           setResultat(data);
         })
         .catch(error => {
@@ -214,8 +214,8 @@ function MapPage(props) {
         maxWidth="md"
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          Les Résultats de la vérification
-          <Pdf />
+          Les Résultats de l'évaluation
+          <Pdf nomPersonne={nomPersonne} selectPermis={selectPermis} selectedValue={selectedValue} listeCarre={listeCarre} choixSubs={choixSubs} resultat={resultat} nomFichier={nomFichier} />
 
         </DialogTitle>
         <IconButton
@@ -253,7 +253,7 @@ function MapPage(props) {
     }
   }, [taille])
   useEffect(() => {
-    if (selectPermis === 3 || selectPermis === 2) {
+    if (selectPermis.id === 3 || selectPermis.id === 2) {
       setEtatPermis(
         <FormControl style={{ marginTop: '20px' }}>
           <FormLabel id="demo-row-radio-buttons-group-label"></FormLabel>
@@ -295,7 +295,7 @@ function MapPage(props) {
             </div>
           </div>
           {/* <AccordeonDetailDecoupe selectDecoupe={selectDecoupe} setSelectDecoupe={setSelectDecoupe} setDecoupeAffiche={setDecoupeAffiche} /> */}
-          <AccordeonListeCentre listeCentre={listeCentre} setListeCarre={setListeCarre} setListeCentre={setListeCentre} setCarreSelect={setCarreSelect} decoupeAffiche={decoupeAffiche} />
+          <AccordeonListeCentre listeCentre={listeCentre} setListeCarre={setListeCarre} setListeCentre={setListeCentre} setCarreSelect={setCarreSelect} decoupeAffiche={decoupeAffiche} setNomFichier={setNomFichier} />
           <ListeSubstance setChoixSubs={setChoixSubs} />
           <div style={{ float: 'right' }} >
             {boutton}

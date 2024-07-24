@@ -24,7 +24,8 @@ export default function SelectVariants(props) {
     const [demandeur, setDemandeur] = useState([]);
 
     const handleChange = (event) => {
-        setSelectPermis(event.target.value);
+        const permis = typePermis.find(item => item.id === event.target.value);
+        setSelectPermis(permis);
     };
     
     useEffect(() => {
@@ -86,7 +87,7 @@ export default function SelectVariants(props) {
                     <Select
                         labelId="demo-simple-select-standard-label"
                         id="demo-simple-select-standard"
-                        value={selectPermis}
+                        value={selectPermis.id}
                         onChange={handleChange}
                         label="typepermis">
                         {typePermis.map((option) => (

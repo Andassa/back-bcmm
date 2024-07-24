@@ -24,6 +24,7 @@ export default function ControlledAccordions(props) {
   const { setListeCentre } = props;
   const { decoupeAffiche } = props;
   const { setListeCarre } = props;
+  const { setNomFichier } = props;
 
   // useEffect(() => {
   //   if (decoupeAffiche.length != 0) {
@@ -35,10 +36,11 @@ export default function ControlledAccordions(props) {
   //     setAutorisation(true);
   //   }
   // }, [decoupeAffiche])
-  const handleError = (event)=>{ setAutorisation(true); }
+  const handleError = (event) => { setAutorisation(true); }
   const handleFileUpload = (event) => {
     if (autorisation === true) {
       const file = event.target.files[0];
+      setNomFichier(file.name)
       const reader = new FileReader();
       reader.onload = (e) => {
         const text = e.target.result;

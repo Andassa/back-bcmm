@@ -30,19 +30,21 @@ const ExportPDF = (props) => {
         if (resultat.length > 0) {
             let res1 = []
             const nb = parseInt(selectedValue);
-
-            for (let i = 0; i < nb; i++) {
-                let res2 = [];
-                res2.push(resultat[i].subs);
-                res2.push(resultat[i].result);
-                res1.push(res2);
+            if (nb > resultat.length) {
+                resultat.forEach(element => {
+                    let res2 = [];
+                    res2.push(element.subs);
+                    res2.push(element.result);
+                    res1.push(res2);
+                });
+            } else {
+                for (let i = 0; i < nb; i++) {
+                    let res2 = [];
+                    res2.push(resultat[i].subs);
+                    res2.push(resultat[i].result);
+                    res1.push(res2);
+                }
             }
-            // resultat.forEach(element => {
-            //     let res2 = [];
-            //     res2.push(element.subs);
-            //     res2.push(element.result);
-            //     res1.push(res2);
-            // });
             setRes(res1)
             console.log(res)
         }

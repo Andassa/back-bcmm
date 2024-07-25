@@ -34,7 +34,18 @@ const ExportPDF = (props) => {
                 resultat.forEach(element => {
                     let res2 = [];
                     res2.push(element.subs);
-                    res2.push(element.result);
+                    if (element.result===1) {
+                        res2.push('nulle');
+                    }
+                    if (element.result===2) {
+                        res2.push('faible');
+                    }
+                    if (element.result===3) {
+                        res2.push('moyenne');
+                    }
+                    if (element.result===4) {
+                        res2.push('élevée');
+                    }
                     res1.push(res2);
                 });
             } else {

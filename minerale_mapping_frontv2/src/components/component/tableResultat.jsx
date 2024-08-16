@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -13,54 +13,70 @@ import { green, yellow } from '@mui/material/colors'; // Importez les couleurs d
 
 const columns = [
     { id: 'subs', label: 'Substance', minWidth: 170 },
-    { id: 'prob', label: 'Probabilité', minWidth: 100 },
+    { id: 'prob', label: 'par lithologie', minWidth: 100 },
+    { id: 'probIndice', label: 'par indice', minWidth: 100 },
 ];
 
-function createData(subs, res, prob) {
-    if (res===1) {
+function createData(subs, res, prob, indice) {
+    if (res === 1) {
         prob = 'nulle';
     }
-    if (res===2) {
+    if (res === 2) {
         prob = 'faible';
     }
-    if (res===3) {
+    if (res === 3) {
         prob = 'moyenne';
     }
-    if (res===4) {
+    if (res === 4) {
         prob = 'élevée';
     }
-    if (res===0) {
+    if (res === 0) {
         prob = 'erreur';
     }
-    return { subs, prob };
+    var probIndice = 20 ; 
+    console.log(indice);
+    if (indice === 1) {
+        probIndice = 'nulle';
+    }
+    if (indice === 3 || indice === 2) {
+        probIndice = 'moyenne';
+    }
+    if (indice === 4) {
+        probIndice = 'élevée';
+    }
+    if (indice === 0) {
+        probIndice = 'erreur';
+    }
+    return { subs, prob, probIndice };
 }
 
 
 export default function StickyHeadTable(props) {
-    const {selectedValue} = props;
+    const { selectedValue } = props;
     const [page, setPage] = React.useState(0);
     const [tab, setTab] = useState([]);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
-    const {resultat} = props ;
-    
-    useEffect(()=>{
+    const { resultat } = props;
+
+    useEffect(() => {
         let t = []
-        if (resultat.length!== 0) {
+        if (resultat.length !== 0) {
+            console.log(resultat)
             resultat.sort((a, b) => parseInt(b.result) - parseInt(a.result));
             const nb = parseInt(selectedValue);
-            if (nb>resultat.length) {
+            if (nb > resultat.length) {
                 resultat.forEach(element => {
-                    t.push(createData(element.subs, element.result, 0))
-                });                
-            }else{
-                for (let i = 0; i < nb ; i++) {
-                    t.push(createData(resultat[i].subs, resultat[i].result, 0))   
+                    t.push(createData(element.subs, element.result, 0, element.probIndice))
+                });
+            } else {
+                for (let i = 0; i < nb; i++) {
+                    t.push(createData(resultat[i].subs, resultat[i].result, 0, resultat[i].probIndice, 0))
                 }
             }
             console.log(t)
             setTab(t);
         }
-    },[resultat,selectedValue])
+    }, [resultat, selectedValue])
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);

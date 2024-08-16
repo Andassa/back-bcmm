@@ -165,6 +165,7 @@ function MapPage(props) {
         })
         .then(data => {
           handleFerme();
+          console.log(data);
           setResultat(data);
         })
         .catch(error => {

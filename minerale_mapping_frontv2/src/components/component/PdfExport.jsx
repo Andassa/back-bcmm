@@ -14,19 +14,19 @@ const ExportPDF = (props) => {
     const { resultat } = props;
     const [permis, setPermis] = useState('');
 
-    const [mouvement, setMouvement] = useState('');
+    var mouvement = 'Octroie'
+
+    // const [res, setRes] = useState([])
+    var res = [];
     useEffect(() => {
         if (selectedValue.length > 0) {
             if (selectedValue === '5') {
-                setMouvement('Octroie');
+                mouvement = 'Octroie';
             }
             if (selectedValue === '10') {
-                setMouvement('Renouvellement');
+                mouvement = 'Renouvellement';
             }
         }
-    }, [selectedValue])
-    const [res, setRes] = useState([])
-    useEffect(() => {
         if (resultat.length > 0) {
             let res1 = []
             const nb = parseInt(selectedValue);
@@ -34,16 +34,16 @@ const ExportPDF = (props) => {
                 resultat.forEach(element => {
                     let res2 = [];
                     res2.push(element.subs);
-                    if (element.result===1) {
+                    if (element.result === 1) {
                         res2.push('nulle');
                     }
-                    if (element.result===2) {
+                    if (element.result === 2) {
                         res2.push('faible');
                     }
-                    if (element.result===3) {
+                    if (element.result === 3) {
                         res2.push('moyenne');
                     }
-                    if (element.result===4) {
+                    if (element.result === 4) {
                         res2.push('élevée');
                     }
                     res1.push(res2);
@@ -56,10 +56,8 @@ const ExportPDF = (props) => {
                     res1.push(res2);
                 }
             }
-            setRes(res1)
-            console.log(res)
+            res = res1;
         }
-        console.log(resultat)
     }, [res, resultat, selectedValue])
 
     const generatePDF = () => {

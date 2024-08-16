@@ -2,8 +2,10 @@ const express = require('express');
 const router = express.Router();
 const { createMultiPolygon } = require('./service/Carre');
 const { getLitho } = require('./service/lithology');
-const { get_nature, getResult,getResultfinal } = require('./service/roche');
-const { getSubs_byId,get_All_Subs_by_id } = require('./service/substance');
+const { get_nature, getResult, getResultfinal } = require('./service/roche');
+const { getSubs_byId, get_All_Subs_by_id } = require('./service/substance');
+const { intersect, lesProbabilité } = require('./service/indice');
+
 const pool = require('../database.js'); // Importez la configuration de la base de données
 
 router.get('/utilisateur/getDemandeur', (req, res) => {
@@ -12,11 +14,11 @@ router.get('/utilisateur/getDemandeur', (req, res) => {
             console.error(error);
             res.status(500).send('Erreur de base de données');
         } else {
-            if(results.rows?.length==0){
-                const response = {erreur :'pas de suggestion'};
+            if (results.rows?.length == 0) {
+                const response = { erreur: 'pas de suggestion' };
                 return res.json(response);
             }
-             return res.json(results.rows); 
+            return res.json(results.rows);
         }
     });
 });
@@ -26,37 +28,50 @@ router.get('/utilisateur/getTypePermis', (req, res) => {
             console.error(error);
             res.status(500).send('Erreur de base de données');
         } else {
-            if(results.rows?.length==0){
-                const response = {erreur :'pas de suggestion'};
+            if (results.rows?.length == 0) {
+                const response = { erreur: 'pas de suggestion' };
                 return res.json(response);
             }
-             return res.json(results.rows); 
+            return res.json(results.rows);
         }
     });
 });
-router.post('/getDonneDemande', async(req, res) => {
+router.post('/getDonneDemande', async (req, res) => {
     const tableauDemande = req.body.donneesTableau;
     try {
-        if (tableauDemande!= null) {
+        if (tableauDemande != null) {
             // const listeSubstances = tableauDemande['choixSubs'];
             const listeCarre = tableauDemande['listeCarre'];
             const req = await createMultiPolygon(listeCarre);
             const lith = await getLitho(req);
             const subs = await get_All_Subs_by_id(tableauDemande['choixSubs']);
-            // const result = await getResult(lith, subs[0][0]['nom']);
+            const probIndice = await lesProbabilité(req, subs);
+            // console.log(probIndice);
             const result = await getResultfinal(lith, subs);
-            // console.log(tableauDemande);
             // tableauDemande.listeCarre.forEach(element => {
             //     console.log(element.coord)
             // });
-            // console.log(lith);
-            console.log(result);
-            return res.json(result);
+
+            const resultFinal = probIndice.map(item1 => {
+                // Trouver l'élément correspondant dans table2
+                const match = result.find(item2 => item2.subs === item1.subs);
+
+                // Combiner les objets correspondants
+                if (match) {
+                    return { ...item1, result: match.result };
+                }
+
+                // Si aucun élément correspondant n'est trouvé, retourner l'objet original
+                return item1;
+            });
+            console.log(resultFinal);
+
+            return res.json(resultFinal);
         } else {
-            return res.json({'error':'tableau vide'});
+            return res.json({ 'error': 'tableau vide' });
         }
     } catch (error) {
-        return res.json({"error":error});
+        return res.json({ "error": error });
     }
 });
 

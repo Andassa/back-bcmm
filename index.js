@@ -22,6 +22,7 @@ const lithology = require('./controllers/lithologyController');
 const decoupe = require('./controllers/DecoupeController');
 const demande = require('./controllers/DemandeController');
 const carre = require('./controllers/CarreController');
+const utilisateur = require('./controllers/UtilisateurController');
 
 // app.use(cors()); // Enable CORS for all routes
 app.use(cors({
@@ -78,6 +79,7 @@ app.use('/', lithology);
 app.use('/', decoupe);
 app.use('/', demande);
 app.use('/', carre);
+app.use('/', utilisateur);
 
 //lancement du serveur
 const port = process.env.PORT || 3000;

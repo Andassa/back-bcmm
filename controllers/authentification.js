@@ -3,6 +3,8 @@ const router = express.Router();
 const passport = require('../usepassport.js');
 const pool = require('../database.js'); // Importez la configuration de la base de données
 const bcrypt = require('bcrypt');
+const { serviceFonction } = require('./service/infoUser');
+
 
 
 
@@ -14,16 +16,18 @@ router.post('/register', (req, res) => {
     const fonction = req.body.fonction;
     const email = req.body.email;
     const password = req.body.password;
+    const service = req.body.service;
 
     // Hachez le mot de passe avant de le stocker en base de données
     bcrypt.hash(password, 10, (err, hash) => {
         // Stockez l'utilisateur dans la base de données PostgreSQL avec le mot de passe haché
-        pool.query("INSERT INTO utilisateurs (id, nom, prenom, username, fonction , email, motdepasse, autorisation, etat) VALUES (concat(\'user\', nextval(\'s_user\')::text), $1,$2,$3,$4,$5,$6,'1','1')", [nom, prenom, username, fonction, email, hash], (err) => {
+        pool.query("INSERT INTO utilisateurs (id, nom, prenom, username, fonction , email, motdepasse, autorisation, etat, service) VALUES (concat(\'user\', nextval(\'s_user\')::text), $1,$2,$3,$4,$5,$6,'1','1',$7)", [nom, prenom, username, fonction, email, hash, service], (err) => {
             if (err) {
                 console.error(err);
                 res.send('Erreur lors de l\'inscription');
             } else {
-                res.redirect('/login');
+                console.log('okay')
+                res.send('/login');
             }
         });
     });
@@ -38,7 +42,7 @@ router.post('/updateProfile', (req, res) => {
     const fonction = req.body.fonction;
     const email = req.body.email;
     const password = req.body.password;
-    const formData = {id, nom, prenom, password}
+    const formData = { id, nom, prenom, password }
 
     // Hachez le mot de passe avant de le stocker en base de données
     bcrypt.hash(password, 10, (err, hash) => {
@@ -163,16 +167,16 @@ router.get('/getSession', (req, res) => {
         return res.json({ erreur: 'veuillez vous connecter' });
     }
 })
-router.get('/getAllFonction', (req, res) => {
-    pool.query("select distinct(fonction) from utilisateurs ", (error, results) => {
-        if (error) {
-            console.error(error);
-            res.status(500).send('Erreur de base de données');
-        } else {
-            return res.json(results.rows);
-        }
-    });
+
+router.get('/getServiceFonction', async (req, res) => {
+    try {
+        const serviceFonctions = await serviceFonction();
+        return res.json(serviceFonctions);
+    } catch (error) {
+        console.log(error);
+    }
 })
+
 router.get('/logout', (req, res) => {
     req.logout((err) => {
         if (err) {

@@ -39,7 +39,7 @@ export default function ImgMediaCard() {
                     
                 // }
                 if (response.data==='admin') {
-                window.location.href = '/dashboard';
+                window.location.href = '/admin/dashboard';
                 }
                 else{
                     window.location.href = '/map';

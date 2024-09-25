@@ -6,7 +6,7 @@ import {
   Route
 } from "react-router-dom";
 import ReactDOM from 'react-dom';
-
+import React, { useState } from 'react';
 import Welcome from "./components/Welcome";
 import Login from "./components/Login";
 import Inscription from "./components/Inscription";
@@ -15,17 +15,21 @@ import Admin from "./components/BaseAdmin";
 
 
 function App() {
+  // const [fenetre, setFenetre]=useState('utilisateurGestion');
   return (
     <>
       {/* This is the alias of BrowserRouter i.e. Router */}
       <Router>
         <Routes>
-          <Route path="/" element={<Welcome />} />
-          <Route path="/welcome" element={<Welcome />} />
+          <Route path="/" element={<Login />} />
+          {/* <Route path="/welcome" element={<Welcome />} /> */}
           <Route path="/login" element={<Login />} />
           <Route path="/inscription" element={<Inscription />} />
           <Route path="/map" element={<Carte />} />
-          <Route path="/dashboard" element={<Admin />} />
+          <Route path="/admin/dashboard" element={<Admin fenetre={'Tableaudebord'} />} />
+          <Route path="/admin/utilisateurGestion" element={<Admin fenetre={'UtilisateurGestion'} />} />
+          <Route path="/admin/carte" element={<Admin fenetre={'Carte'} />} />
+          <Route path="/admin/historique" element={<Admin fenetre={'Historique'} />} />
         </Routes>
       </Router>
     </>

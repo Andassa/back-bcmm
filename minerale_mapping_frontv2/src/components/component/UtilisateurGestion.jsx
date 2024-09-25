@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -23,13 +23,21 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
+import ListeUtilisateur from './gestionUtilisateurs/listeUtilisateurs'
+import ValidationUtilisateur from './gestionUtilisateurs/validationUtilisateur'
+import BloqueUtilisateur from './gestionUtilisateurs/bloqueUtilisateur'
 
+import axiosInstance from '../../Lesmomdules/axiosInstance';
 
 const columns = [
     { id: 'nom', label: 'Nom', minWidth: 170 },
     { id: 'prenom', label: 'Prénom', minWidth: 100 },
     { id: 'fonction', label: 'Fonction', minWidth: 100 },
+    { id: 'service', label: 'Service', minWidth: 100 },
+    { id: 'email', label: 'Email', minWidth: 100 },
+    { id: 'autorisation', label: 'Rôle', minWidth: 100 },
 ];
+//nom prenom nom d'utilisateur fonction service email role
 
 function createData(nom, prenom, fonction) {
     return { nom, prenom, fonction };
@@ -69,6 +77,30 @@ export default function BasicTabs() {
     const [value, setValue] = React.useState(0);
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [listeUtilisateurs, setListeUtilisateurs] = useState([]);
+    const [enCours, setEncours] = useState([]);
+    const [enAttente, setEnAttente] = useState([]);
+    const [bloque, setBloque] = useState([]);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axiosInstance.get('http://localhost:3000/admin/allUser');
+                if (response.data.hasOwnProperty('erreur')) {
+                    window.location.href = '/login';
+                }
+                setEncours(response.data.filter(element => element.etat === 2));
+                setEnAttente(response.data.filter(element => element.etat === 1));
+                setBloque(response.data.filter(element => element.etat === 3));
+
+                setListeUtilisateurs(response.data)
+
+            } catch (error) {
+                console.error('Erreur lors de la requête GET :', error);
+            }
+        };
+        fetchData();
+    }, []);
+
 
     const [rows, setRows] = useState([
         createData('Rakotomanana', 'Jerry', 'direction technique'),
@@ -166,221 +198,14 @@ export default function BasicTabs() {
                 </Tabs>
             </Box>
             <CustomTabPanel value={value} index={0}>
-                <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-                    <TableContainer sx={{ maxHeight: 440 }}>
-                        <Table stickyHeader aria-label="sticky table">
-                            <TableHead>
-                                <TableRow>
-                                    {columns.map((column) => (
-                                        <TableCell
-                                            key={column.id}
-                                            align={column.align}
-                                            style={{ minWidth: column.minWidth }}
-                                        >
-                                            {column.label}
-                                        </TableCell>
-                                    ))}
-                                    <TableCell></TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {rows
-                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    .map((row) => {
-                                        return (
-                                            <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                                                {columns.map((column) => {
-                                                    const value = row[column.id];
-                                                    return (
-                                                        <TableCell key={column.id} align={column.align}>
-                                                            {column.format && typeof value === 'number'
-                                                                ? column.format(value)
-                                                                : value}
-                                                        </TableCell>
-                                                    );
-                                                })}
-                                                <TableCell>
-                                                    <Button variant="outlined" color="error" onClick={handleClickOpen}>
-                                                        Bloquer
-                                                    </Button>
-                                                    <Dialog
-                                                        open={open}
-                                                        onClose={() => handleClose('')}
-                                                        aria-labelledby="alert-dialog-title"
-                                                        aria-describedby="alert-dialog-description"
-                                                    >
-                                                        <DialogTitle id="alert-dialog-title">
-                                                            {"Bloquer un utilisateur"}
-                                                        </DialogTitle>
-                                                        <DialogContent>
-                                                            <DialogContentText id="alert-dialog-description">
-                                                                Voulez vous vraiment bloquer Rabe Zo ?
-                                                            </DialogContentText>
-                                                        </DialogContent>
-                                                        <DialogActions>
-                                                            <Button variant="outlined" onClose={() => handleClose('')}>annuler</Button>
-                                                            <Button variant="outlined" color="error" onClick={handleClose1} autoFocus>
-                                                                valider
-                                                            </Button>
-                                                        </DialogActions>
-                                                    </Dialog>
-                                                </TableCell>
-                                            </TableRow>
-                                        );
-                                    })}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                    <TablePagination
-                        rowsPerPageOptions={[10, 25, 100]}
-                        component="div"
-                        count={rows.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
-                </Paper>
+                <ListeUtilisateur enCours={enCours} />
             </CustomTabPanel>
             <CustomTabPanel value={value} index={1}>
-                <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-                    <TableContainer sx={{ maxHeight: 440 }}>
-                        <Table stickyHeader aria-label="sticky table">
-                            <TableHead>
-                                <TableRow>
-                                    {columns.map((column) => (
-                                        <TableCell
-                                            key={column.id}
-                                            align={column.align}
-                                            style={{ minWidth: column.minWidth }}
-                                        >
-                                            {column.label}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {rows2
-                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    .map((row) => {
-                                        return (
-                                            <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                                                {columns.map((column) => {
-                                                    const value = row[column.id];
-                                                    return (
-                                                        <TableCell key={column.id} align={column.align}>
-                                                            {column.format && typeof value === 'number'
-                                                                ? column.format(value)
-                                                                : value}
-                                                        </TableCell>
-                                                    );
-                                                })}
-                                                <TableCell>
-                                                    <Button variant="outlined" color="success" onClick={handleClickOpen}>
-                                                        valider
-                                                    </Button>
-                                                    <Dialog
-                                                        open={open}
-                                                        onClose={handleClose}
-                                                        aria-labelledby="alert-dialog-title"
-                                                        aria-describedby="alert-dialog-description"
-                                                    >
-                                                        <DialogTitle id="alert-dialog-title">
-                                                            {"Valider la demande d'inscription"}
-                                                        </DialogTitle>
-                                                        <DialogContent>
-                                                            <DialogContentText id="alert-dialog-description">
-                                                                Voulez vous valider la demande d'inscription de Rabenja Mitia ?
-                                                            </DialogContentText>
-                                                        </DialogContent>
-                                                        <DialogActions>
-                                                            <Button variant="outlined" onClick={handleClose}>annuler</Button>
-                                                            <Button variant="outlined" onClick={handleClose2} autoFocus>
-                                                                valider
-                                                            </Button>
-                                                        </DialogActions>
-                                                    </Dialog>
-                                                </TableCell>
-                                            </TableRow>
-                                        );
-                                    })}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                    <TablePagination
-                        rowsPerPageOptions={[10, 25, 100]}
-                        component="div"
-                        count={rows2.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
-                </Paper>
+                <ValidationUtilisateur enAttente={enAttente} />
             </CustomTabPanel>
             <CustomTabPanel value={value} index={2}>
-                <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-                    <TableContainer sx={{ maxHeight: 440 }}>
-                        <Table stickyHeader aria-label="sticky table">
-                            <TableHead>
-                                <TableRow>
-                                    {columns.map((column) => (
-                                        <TableCell
-                                            key={column.id}
-                                            align={column.align}
-                                            style={{ minWidth: column.minWidth }}
-                                        >
-                                            {column.label}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {rows3
-                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    .map((row) => {
-                                        return (
-                                            <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                                                {columns.map((column) => {
-                                                    const value = row[column.id];
-                                                    return (
-                                                        <TableCell key={column.id} align={column.align}>
-                                                            {column.format && typeof value === 'number'
-                                                                ? column.format(value)
-                                                                : value}
-                                                        </TableCell>
-                                                    );
-                                                })}
-                                                <TableCell>
-                                                    <Button onClick={handleMisokatra}>Débloquer</Button>
-                                                    <Snackbar open={misokatra} autoHideDuration={600} onClose={handleMihidy}>
-                                                        <Alert
-                                                            onClose={handleClose}
-                                                            severity="success"
-                                                            variant="filled"
-                                                            sx={{ width: '100%' }}
-                                                        >
-                                                            utilisateur débloqué
-                                                        </Alert>
-                                                    </Snackbar>
-                                                </TableCell>
-                                            </TableRow>
-                                        );
-                                    })}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                    <TablePagination
-                        rowsPerPageOptions={[10, 25, 100]}
-                        component="div"
-                        count={rows3.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
-                </Paper>
+                <BloqueUtilisateur bloque={bloque} />
             </CustomTabPanel>
-        </Box>
+        </Box >
     );
 }

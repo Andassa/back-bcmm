@@ -8,40 +8,127 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import { styled } from '@mui/material/styles';
-import Paper from '@mui/material/Paper';
 import axiosInstance from '../../Lesmomdules/axiosInstance';
 
 
 export default function ImgMediaCard() {
-    let navigate = useNavigate();
 
-    const [fonction, setFonction] = useState([]);
-    const [choixFonction, setChoixFonction] = useState('');
-    const [messageErreur, setMessageErreur] = useState('');
+    const [fonctions, setFonctions] = useState([]);
+    const [services, setServices] = useState([]);
+    const [service, setService] = useState('');
+    const [fonction, setFonction] = useState('');
+    const [passwordErreur, setPasswordErreur] = useState('');
+    const [dataErreur, setDataErreur] = useState('');
     const [formData, setFormData] = useState({
         nom: '',
         prenom: '',
         username: '',
+        fonction: '',
+        service: '',
         email: '',
         password: '',
-        password2: '',
+        password2: ''
     });
+    const verificationPassword = (password) => {
+        const minLength = /.{8,}/;
+        const hasUppercase = /[A-Z]/;
+        const hasLowercase = /[a-z]/;
+        const forbiddenCharacters = /["'<>\\/|;&?#=]/;
+
+        if (forbiddenCharacters.test(password)) {
+            return 'Le mot de passe contient des caractères interdits.';
+        }
+        if (!minLength.test(password)) {
+            return 'Le mot de passe doit contenir au moins 8 caractères.';
+        }
+        if (!hasUppercase.test(password)) {
+            return 'Le mot de passe doit contenir au moins une majuscule.';
+        }
+        if (!hasLowercase.test(password)) {
+            return 'Le mot de passe doit contenir au moins une minuscule.';
+        }
+        return 'okay';
+    };
+    const validerEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        
+        if (!emailRegex.test(email)) {
+            return 'Adresse e-mail invalide.';
+        }
+
+        return 'okay'; // Retourne une chaîne vide si l'e-mail est valide
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
+
+        if (name === 'password2') {
+            if (formData.password !== value) {
+                setPasswordErreur('Les mots de passe ne correspondent pas');
+            }
+            else {
+                setPasswordErreur('');
+            }
+        }
+
         setFormData({ ...formData, [name]: value });
+    }
+
+    const handleChangeService = (event, newInputValue) => {
+        setService(newInputValue);
     };
+    const handleChangeFonction = (event, newInputValue) => {
+        setFonction(newInputValue);
+    };
+
+    useEffect(() => {
+        setFormData({ ...formData, service: service, fonction: fonction });
+    }, [service, fonction])
+
+
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        window.location.href = '/login';
+        // window.location.href = '/login';
         try {
-            // const response = await axiosInstance.post('http://localhost:3000/register', formData);
-            // if (response.data.hasOwnProperty('erreur')) {
-            //     setMessageErreur(response.data.erreur.message);
-            // } else {
-            //     // console.log(response.data);
+
+            const forbiddenCharacters = /["'<>\\/|;&?#=]/;
+            const verifMdp = verificationPassword(formData.password);
+            if (verifMdp !== 'okay') {
+                setDataErreur(verifMdp);
+            }else{setDataErreur(''); }
+            if (formData.nom === '' || forbiddenCharacters.test(formData.nom)) {
+                setDataErreur('nom vide ou contient un caractère interdit');
+            }
+            if (forbiddenCharacters.test(formData.prenom)) {
+                setDataErreur('prénom contient un caractère interdit');
+            }
+            if (formData.username === '' || forbiddenCharacters.test(formData.username)) {
+                setDataErreur('nom d\'utilisateur vide ou contient un caractère interdit');
+            }
+            const verifEmail = validerEmail(formData.email);
+            if (formData.email === '' || verifEmail!=='okay') {
+                setDataErreur('email vide ou invalide');
+            }
+            if (formData.service === '' || forbiddenCharacters.test(formData.service)) {
+                setDataErreur('service vide ou contient un caractère interdit');
+            }
+            if (formData.fonction === '' || forbiddenCharacters.test(formData.fonction)) {
+                setDataErreur('fonction vide ou contient un caractère interdit');
+            }
+            console.log(formData);
+
+            if (dataErreur==='' && passwordErreur==='') {
+                console.log('ato')
+                const response = await axiosInstance.post('http://localhost:3000/register', formData);
+                if (response.data.hasOwnProperty('erreur')) {
+                    setDataErreur(response.data.erreur.message);
+                } 
+                console.log(response.data)
+                
                 window.location.href = '/login';
-            // }
+            }
         } catch (error) {
             console.error('Error sending form data:', error);
         }
@@ -50,7 +137,7 @@ export default function ImgMediaCard() {
 
     useEffect(() => {
         try {
-            fetch('http://localhost:3000/getAllFonction', {
+            fetch('http://localhost:3000/getServiceFonction', {
                 method: 'Get',
                 headers: { 'Content-Type': 'application/json' }
             })
@@ -60,7 +147,14 @@ export default function ImgMediaCard() {
                     }
                     return response.json();
                 })
-                .then(data => setFonction(data))
+                .then(
+                    data => {
+                        console.log(data);
+                        setFonctions(data.fonction)
+                        setServices(data.service)
+                    }
+
+                )
                 .catch(error => console.log(error));
         } catch (error) {
             console.log(error);
@@ -70,21 +164,13 @@ export default function ImgMediaCard() {
     const retour = async (e) => {
         window.location.href = '/login';
     }
-
-    const defaultProps = {
-        options: fonction,
-        getOptionLabel: (option) => option.fonction.toString()
-    }
-
-    const CustomPaper = styled(Paper)({
-        maxHeight: '400px',  // augmenter selon vos besoins
-        minWidth: '350px',
-    });
-
-    const handleInputChange = (event, newInputValue) => {
-        setChoixFonction(newInputValue)
-        const formDataa = { ...formData, "fonction": newInputValue }
-        setFormData(formDataa);
+    const listeService = {
+        options: services,
+        getOptionLabel: (option) => option,
+    };
+    const listeFonction = {
+        options: fonctions,
+        getOptionLabel: (option) => option,
     };
 
     return (
@@ -104,70 +190,91 @@ export default function ImgMediaCard() {
                         <TextField label={'Nom'}
                             id="margin-dense" margin="dense"
                             name='nom'
-                            value={FormData.nom}
+                            value={formData.nom}
                             onChange={handleChange} required />
 
                         <TextField
                             label={'Prénom'}
                             id="margin-dense" margin="dense"
                             name='prenom'
-                            value={FormData.prenom}
-                            onChange={handleChange} required />
+                            value={formData.prenom}
+                            onChange={handleChange} />
 
                         <TextField
                             label={'Nom d\'utilisateur'}
                             id="margin-dense" margin="dense"
                             name='username'
-                            value={FormData.username}
+                            value={formData.username}
                             onChange={handleChange} required />
 
                         <TextField
                             label={'Email'}
-                            id="margin-dense" margin="dense"
+                            id="margin-dense" margin="dense" type='email'
                             name='email'
-                            value={FormData.email}
+                            value={formData.email}
                             onChange={handleChange} required />
 
                         <Autocomplete
-                            {...defaultProps}
-                            id="disable-close-on-select" margin='dense'
-                            PaperComponent={CustomPaper}
+                            {...listeService}
+                            id="free-solo-2-demo"
                             freeSolo
-                            inputValue={choixFonction}
-                            onInputChange={handleInputChange}
+                            name='service'
+                            inputValue={service}
+                            onInputChange={handleChangeService}
                             renderInput={(params) => (
                                 <TextField
-                                    required
-                                    name='fonction'
                                     {...params}
-                                    label="fonction"
-
+                                    label="service"
+                                    required
                                 />
                             )}
                             sx={{ m: 0, minWidth: 170, display: 'flex' }}
+                            style={{ padding: '5px' }}
+                        />
+                        <Autocomplete
+                            {...listeFonction}
+                            id="free-solo-2-demo"
+                            freeSolo
+                            name='fonction'
+                            inputValue={fonction}
+                            onInputChange={handleChangeFonction}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="fonction"
+                                    required
+                                />
+                            )}
+                            sx={{ m: 0, minWidth: 170, display: 'flex' }}
+                            style={{ padding: '5px' }}
                         />
 
                         <TextField
                             label={'Mot de passe'}
                             id="margin-dense" margin="dense" type="password"
                             name='password'
-                            value={FormData.password}
+                            value={formData.password}
                             onChange={handleChange} required />
 
                         <TextField
                             label={'Confirmation mot de passe'}
                             id="margin-dense" margin="dense" type='password'
                             name='password2'
-                            value={FormData.password}
+                            value={formData.password2}
                             onChange={handleChange} required />
 
 
                     </Box>
                 </CardContent>
-                <Typography style={{ color: 'rgb(37, 103, 169)', display: 'flex', alignItems: 'center', justifyContent: 'center' }} variant="overline" display="block" gutterBottom>
-                    {messageErreur}
+                <Typography style={{ color: 'red', display: 'flex', alignItems: 'center', justifyContent: 'center' }} variant="overline" display="block" gutterBottom>
+                    {passwordErreur}
                 </Typography>
-                <Button type="submit" variant="contained" onClick={handleSubmit } style={{ float: 'right' }}>se connecter</Button>
+                <Typography style={{ color: 'red', display: 'flex', alignItems: 'center', justifyContent: 'center' }} variant="overline" display="block" gutterBottom>
+                    {dataErreur}
+                </Typography>
+                <Button type="submit" variant="contained" onClick={handleSubmit} style={{ float: 'right' }} disabled={passwordErreur !== ''} >
+                    se connecter
+                </Button>
             </form>
             <CardActions>
                 <Button size="small" onClick={retour} >retour</Button>

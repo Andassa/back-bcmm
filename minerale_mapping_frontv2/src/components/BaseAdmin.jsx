@@ -38,21 +38,24 @@ import Carte from './Carte';
 import Historique from './component/Historique';
 import UtilisateurGestion from './component/UtilisateurGestion';
 
+import { useNavigate } from 'react-router-dom';
+
 const drawerWidth = 240;
 const pages = [''];
 const settings = ['Profil', 'Logout'];
 
 function ResponsiveDrawer(props) {
-  const { window } = props;
+  const { fenetre } = props;
+  const [fenetre2 ,setFenetre2] = useState('');
   const [taille] = useState(0);
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
-  const [pejy, setPejy] = useState((<Carte  />));
+  const [pejy, setPejy] = useState((<Carte />));
   const comp = [
-    { name: 'Tableau de bord', page: 'Tableaudebord', icon: (<TableChartIcon />) , comp :(<TableauDeBord />)},
-    { name: 'Carte', page: 'Carte', icon: (<MapIcon />) , comp :(<Carte taille={taille} />)},
-    { name: 'Gestion Utilisateur', page: 'GestionUtilisateur', icon: (<PersonIcon />) , comp :(<UtilisateurGestion />)},
-    { name: 'Historique', page: 'Historique', icon: (<HistoryIcon />),comp :(<Historique />)},
+    { name: 'Tableau de bord', page: 'Tableaudebord', icon: (<TableChartIcon />), comp: (<TableauDeBord />), lien: '/admin/dashboard' },
+    { name: 'Carte', page: 'Carte', icon: (<MapIcon />), comp: (<Carte taille={taille} />), lien: '/admin/carte' },
+    { name: 'Gestion Utilisateur', page: 'UtilisateurGestion', icon: (<PersonIcon />), comp: (<UtilisateurGestion />), lien: '/admin/utilisateurGestion' },
+    { name: 'Historique', page: 'Historique', icon: (<HistoryIcon />), comp: (<Historique />), lien: '/admin/historique' },
   ]
 
 
@@ -76,6 +79,18 @@ function ResponsiveDrawer(props) {
     fetchData();
   }, []);
 
+  const [composant, setComposant] = useState();
+  useEffect(() => {
+    setFenetre2(fenetre);
+    console.log(fenetre2)
+    const cmps = (comp.filter(element => element.page === fenetre)[0]).comp;
+    setComposant(cmps);
+  }, [fenetre, fenetre2]);
+  const handleMenu = (lien) => {
+    window.location.href = lien;
+  }
+
+
   const handleDrawerClose = () => {
     setIsClosing(true);
     setMobileOpen(false);
@@ -97,7 +112,7 @@ function ResponsiveDrawer(props) {
       <Divider />
       <List>
         {comp.map((text, index) => (
-          <ListItem key={index} disablePadding onClick={() => handleMenu(text.comp, text.page)} active>
+          <ListItem key={index} disablePadding onClick={() => handleMenu(text.lien)} active>
             <ListItemButton>
               <ListItemIcon>
                 {text.icon}
@@ -110,10 +125,6 @@ function ResponsiveDrawer(props) {
       <Divider />
     </div>
   );
-  const [composant, setComposant] = useState(<TableauDeBord />);
-  const handleMenu = (menu, page) => {
-    setComposant(menu)
-  }
 
   function HideOnScroll(props) {
     const { children, window } = props;
@@ -165,7 +176,7 @@ function ResponsiveDrawer(props) {
         <AppBar style={{ backgroundColor: 'rgb(16 87 157)' }}>
           <Container maxWidth="xl">
             <Toolbar disableGutters>
-              <img src={logo} alt="logo d l entreprise" style={{ width: '95px', height: '45px', marginRight: '20px', marginLeft: '200px' }} />
+              <img src={logo} alt="logo d l entreprise" style={{ width: '95px', height: '45px', marginLeft: '20px' }} />
               <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
                 <IconButton
                   size="large"
@@ -222,7 +233,7 @@ function ResponsiveDrawer(props) {
                   </IconButton>
                 </Tooltip>
                 <Menu
-                  sx={{ mt: '45px' }}
+                  sx={{ mt: '50px' }}
                   id="menu-appbar"
                   anchorEl={anchorElUser}
                   anchorOrigin={{
@@ -255,44 +266,38 @@ function ResponsiveDrawer(props) {
           </Container>
         </AppBar>
       </HideOnScroll>
-      <Box
-        component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        aria-label="mailbox folders"
+      <Drawer
+        variant="permanent"
+        sx={{
+          width: drawerWidth,
+          flexShrink: 0,
+          [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
+        }}
       >
-        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-        <Drawer
-          container={container}
-          variant="temporary"
-          open={mobileOpen}
-          onTransitionEnd={handleDrawerTransitionEnd}
-          onClose={handleDrawerClose}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
-          sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-          }}
-        >
-          {drawer}
-        </Drawer>
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-          }}
-          open
-        >
-          {drawer}
-        </Drawer>
-      </Box>
+        {drawer}
+      </Drawer>
+
       <Box
         component="main"
         sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
       >
         <Toolbar />
+        <Box
+          component="nav"
+          sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+          aria-label="mailbox folders"
+        >
+          {/* <Drawer
+            variant="permanent"
+            sx={{
+              display: { xs: 'none', sm: 'block' },
+              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            }}
+            open
+          >
+            {drawer}
+          </Drawer> */}
+        </Box>
         {composant}
       </Box>
     </Box>

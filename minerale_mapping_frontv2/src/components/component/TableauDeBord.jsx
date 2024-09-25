@@ -70,7 +70,7 @@ export default function SquareCorners() {
             <Stack direction="row" spacing={2}>
                 <DemoPaper square={false}>
                     <Typography variant="h5" gutterBottom style={{ color: 'blue' }}>
-                        Nombre de vérification aujourd'hui
+                        Nombre d'évaluation aujourd'hui
                     </Typography>
                     <Typography variant="h2" gutterBottom style={{ color: 'grey' }}>
                         3
@@ -79,7 +79,7 @@ export default function SquareCorners() {
                 </DemoPaper>
                 <DemoPaper square={false}>
                     <Typography variant="h5" gutterBottom style={{ color: 'blue' }}>
-                        Nombre de vérification cette Semaine
+                        Nombre d'évaluation cette Semaine
                     </Typography>
                     <Typography variant="h2" gutterBottom style={{ color: 'grey' }}>
                         5
@@ -88,7 +88,7 @@ export default function SquareCorners() {
                 </DemoPaper>
                 <DemoPaper square={false}>
                     <Typography variant="h5" gutterBottom style={{ color: 'blue' }}>
-                        Nombre de vérification ce mois-ci
+                        Nombre d'évaluation ce mois-ci
                     </Typography>
                     <Typography variant="h2" gutterBottom style={{ color: 'grey' }}>
                         10

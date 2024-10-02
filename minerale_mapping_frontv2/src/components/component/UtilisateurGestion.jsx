@@ -81,7 +81,19 @@ export default function BasicTabs() {
     const [enCours, setEncours] = useState([]);
     const [enAttente, setEnAttente] = useState([]);
     const [bloque, setBloque] = useState([]);
+
+    const newIndex = localStorage.getItem('indexPanel');
     useEffect(() => {
+        console.log(newIndex);
+        if (newIndex == 0) {
+            setValue(0);
+        }
+        if (newIndex == 1) {
+            setValue(1);
+        }
+        if (newIndex == 2) {
+            setValue(2);
+        }
         const fetchData = async () => {
             try {
                 const response = await axiosInstance.get('http://localhost:3000/admin/allUser');
@@ -148,8 +160,6 @@ export default function BasicTabs() {
         setRows([...rows, newItem]);
         setOpen(false);
     };
-
-
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -172,18 +182,12 @@ export default function BasicTabs() {
         setOpen(false);
         setMisokatra(true);
     };
-
     const handleMihidy = (event, reason) => {
         if (reason === 'clickaway') {
             return;
         }
-
         setMisokatra(false);
     };
-
-
-
-
     const handleClick = () => {
         setMisokatra(true);
     };

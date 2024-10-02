@@ -12,11 +12,9 @@ import TableCell from '@mui/material/TableCell';
 import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+
+import axiosInstance from '../../../Lesmomdules/axiosInstance';
+
 
 const columns = [
     { id: 'nom', label: 'Nom', minWidth: 170 },
@@ -26,41 +24,18 @@ const columns = [
     { id: 'email', label: 'Email', minWidth: 100 },
     { id: 'autorisation', label: 'Rôle', minWidth: 100 },
 ];
-function createData(nom, prenom, fonction) {
-    return { nom, prenom, fonction };
-}
-
 
 export default function BasicTabs(props) {
-    const [value, setValue] = React.useState(0);
     const { bloque } = props;
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-    const [rows, setRows] = useState([
-        createData('Rakotomanana', 'kaka', 'direction technique'),
-        createData('Raholisoa', 'David', 'direction technique'),
-        createData('Rakotoarison', 'Mihary', 'Employe carthotèque'),
-        createData('Rabe', 'Zo', 'Employe carthotèque'),
-        createData('Randria', 'Fanilo', 'Stagiaire'),
-    ]);
-
     const [open, setOpen] = React.useState(false);
-
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
 
     const handleClose = () => {
         setOpen(false);
     };
-    const handleClose1 = () => {
-        const filteredRows = rows.filter(row => row.nom !== 'Rabe');
-        setRows(filteredRows);
-        const newItem = createData('Rabe', 'Zo', 'Employe carthotèque');
-        setOpen(false);
-    };
-
+  
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -70,14 +45,28 @@ export default function BasicTabs(props) {
         setPage(0);
     };
 
-    const handleClickRow = (row) => {
-        console.log("Ligne cliquée:", row);
-        // Ajoutez ici le code pour ce qui doit se passer lors du clic sur une ligne
-    };
+   
     const [misokatra, setMisokatra] = React.useState(false);
 
-    const handleMisokatra = () => {
-        console.log('Misokatra');
+    const handleMisokatra = (utilisateurDebloque) => {
+        console.log(utilisateurDebloque)
+        const id = utilisateurDebloque;
+        const fetchData = async () => {
+            try {
+                const response = await axiosInstance.post('http://localhost:3000/admin/debloquer', id);
+                if (response.data.hasOwnProperty('erreur')) {
+                    window.location.href = '/login';
+                }
+                console.log(response);
+            } catch (error) {
+                console.error('Erreur lors de la requête GET :', error);
+            }
+        };
+        fetchData();
+        localStorage.setItem('indexPanel', 2);
+        window.location.reload();
+        setOpen(false);
+        setMisokatra(true);
     };
 
     const handleMihidy = (event, reason) => {
@@ -123,7 +112,7 @@ export default function BasicTabs(props) {
                                             );
                                         })}
                                         <TableCell>
-                                            <Button onClick={handleMisokatra}>Débloquer</Button>
+                                            <Button onClick={() => handleMisokatra(row)}>Débloquer</Button>
                                             <Snackbar open={misokatra} autoHideDuration={600} onClose={handleMihidy}>
                                                 <Alert
                                                     onClose={handleClose}

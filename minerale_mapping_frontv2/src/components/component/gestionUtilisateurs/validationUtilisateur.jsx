@@ -16,6 +16,9 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
+import axiosInstance from '../../../Lesmomdules/axiosInstance';
+
+
 const columns = [
     { id: 'nom', label: 'Nom', minWidth: 170 },
     { id: 'prenom', label: 'Prénom', minWidth: 100 },
@@ -33,6 +36,8 @@ export default function BasicTabs(props) {
     const { enAttente } = props;
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [selectUser , setSelectUser] = React.useState();
+    const [message , setMessage] = useState('');
 
     const [rows, setRows] = useState([
         createData('Rakotomanana', 'kaka', 'direction technique'),
@@ -42,13 +47,31 @@ export default function BasicTabs(props) {
         createData('Randria', 'Fanilo', 'Stagiaire'),
     ]);
 
-    const handleValidation = () => {
-        console.log('okay')
+    const handleValidation = (utilisateurValide) => {
+        const id = utilisateurValide;
+        const fetchData = async () => {
+            try {
+                const response = await axiosInstance.post('http://localhost:3000/admin/valider', id);
+                if (response.data.hasOwnProperty('erreur')) {
+                    window.location.href = '/login';
+                }
+                console.log(response);
+            } catch (error) {
+                console.error('Erreur lors de la requête GET :', error);
+            }
+        };
+        fetchData();
+        localStorage.setItem('indexPanel', 1);
+        window.location.reload();
+        setOpen(false);
     }
 
     const [open, setOpen] = React.useState(false);
 
-    const handleClickOpen = () => {
+    const handleClickOpen = (utilisateurValide) => {
+        // console.log(utilisateurValide);
+        setSelectUser(utilisateurValide);
+        setMessage('Voulez vous valider la demande d\'inscription de '+utilisateurValide.nom+ ' '+utilisateurValide.prenom + ' ?');
         setOpen(true);
     };
 
@@ -111,7 +134,7 @@ export default function BasicTabs(props) {
                                             );
                                         })}
                                         <TableCell>
-                                            <Button variant="outlined" color="success" onClick={handleClickOpen}>
+                                            <Button variant="outlined" color="success" onClick={() => handleClickOpen(row)}>
                                                 valider
                                             </Button>
                                             <Dialog
@@ -125,12 +148,13 @@ export default function BasicTabs(props) {
                                                 </DialogTitle>
                                                 <DialogContent>
                                                     <DialogContentText id="alert-dialog-description">
-                                                        Voulez vous valider la demande d'inscription de Rabenja Mitia ?
+                                                        {/* Voulez vous valider la demande d'inscription de {selectUser.nom} {selectUser.prenom} ? */}
+                                                       {message}
                                                     </DialogContentText>
                                                 </DialogContent>
                                                 <DialogActions>
                                                     <Button variant="outlined" onClick={handleClose}>annuler</Button>
-                                                    <Button variant="outlined" onClick={handleValidation} autoFocus>
+                                                    <Button variant="outlined" onClick={() => handleValidation(selectUser)} autoFocus>
                                                         valider
                                                     </Button>
                                                 </DialogActions>

@@ -18,7 +18,34 @@ router.get('/admin/allUser', (req, res) => {
 });
 router.post('/admin/bloquer', (req, res) => {
     const id = req.body.id;
-    const requete = "update utilisateurs set etat =3 where id ='"+id+"';";
+    const requete = "update utilisateurs set etat =3 where id ='"+id+"'";
+    console.log(requete);
+    pool.query(requete, (error, results) => {
+        if (error) {
+            console.error(error);
+            res.status(500).send('Erreur de base de données');
+        } else {
+            return res.json('ok'); // Renvoyer la réponse au client avec les données
+        }
+    });
+})
+router.post('/admin/debloquer', (req, res) => {
+    const id = req.body.id;
+    const requete = "update utilisateurs set etat =2 where id ='"+id+"'";
+    console.log(requete);
+    pool.query(requete, (error, results) => {
+        if (error) {
+            console.error(error);
+            res.status(500).send('Erreur de base de données');
+        } else {
+            return res.json('ok'); // Renvoyer la réponse au client avec les données
+        }
+    });
+})
+router.post('/admin/valider', (req, res) => {
+    const id = req.body.id;
+    const requete = "update utilisateurs set etat = 2 where id ='"+id+"'";
+    console.log(requete);
     pool.query(requete, (error, results) => {
         if (error) {
             console.error(error);

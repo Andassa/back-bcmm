@@ -5,6 +5,7 @@ const { getLitho } = require('./service/lithology');
 const { get_nature, getResult, getResultfinal } = require('./service/roche');
 const { getSubs_byId, get_All_Subs_by_id } = require('./service/substance');
 const { intersect, lesProbabilité } = require('./service/indice');
+const {insertHistorique} = require('./service/indice');
 
 const pool = require('../database.js'); // Importez la configuration de la base de données
 
@@ -37,15 +38,22 @@ router.get('/utilisateur/getTypePermis', (req, res) => {
     });
 });
 router.post('/getDonneDemande', async (req, res) => {
+    console.log(req.session.user);
     const tableauDemande = req.body.donneesTableau;
     try {
         if (tableauDemande != null) {
             // const listeSubstances = tableauDemande['choixSubs'];
+            console.log(tableauDemande);
             const listeCarre = tableauDemande['listeCarre'];
-            const req = await createMultiPolygon(listeCarre);
-            const lith = await getLitho(req);
+            const multipoly = await createMultiPolygon(listeCarre);
+            const lith = await getLitho(multipoly);
             const subs = await get_All_Subs_by_id(tableauDemande['choixSubs']);
-            const probIndice = await lesProbabilité(req, subs);
+            const donnees_historique = {demandeur:tableauDemande.nomPersonne ,typepermis : tableauDemande.selectPermis, carres:multipoly }
+            await insertHistorique(donnees_historique);
+            // console.log(donnees_historique);
+
+            // resultats
+            const probIndice = await lesProbabilité(multipoly, subs);
             // console.log(probIndice);
             const result = await getResultfinal(lith, subs);
             // tableauDemande.listeCarre.forEach(element => {

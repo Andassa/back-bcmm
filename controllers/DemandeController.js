@@ -5,7 +5,7 @@ const { getLitho } = require('./service/lithology');
 const { get_nature, getResult, getResultfinal } = require('./service/roche');
 const { getSubs_byId, get_All_Subs_by_id } = require('./service/substance');
 const { intersect, lesProbabilité } = require('./service/indice');
-const {insertHistorique} = require('./service/indice');
+const { get_sequence_historique,insert_Historique } = require('./service/historique');
 
 const pool = require('../database.js'); // Importez la configuration de la base de données
 
@@ -37,20 +37,18 @@ router.get('/utilisateur/getTypePermis', (req, res) => {
         }
     });
 });
-router.post('/getDonneDemande', async (req, res) => {
-    console.log(req.session.user);
+router.post('/utilisateur/getDonneDemande', async (req, res) => {
     const tableauDemande = req.body.donneesTableau;
     try {
         if (tableauDemande != null) {
             // const listeSubstances = tableauDemande['choixSubs'];
-            console.log(tableauDemande);
+            // console.log(tableauDemande);
             const listeCarre = tableauDemande['listeCarre'];
             const multipoly = await createMultiPolygon(listeCarre);
             const lith = await getLitho(multipoly);
             const subs = await get_All_Subs_by_id(tableauDemande['choixSubs']);
-            const donnees_historique = {demandeur:tableauDemande.nomPersonne ,typepermis : tableauDemande.selectPermis, carres:multipoly }
-            await insertHistorique(donnees_historique);
-            // console.log(donnees_historique);
+
+            const donnees_historique = { demandeur: tableauDemande.nomPersonne, idUtilisateur: req.user.id, typepermis: tableauDemande.selectPermis, carres: multipoly }
 
             // resultats
             const probIndice = await lesProbabilité(multipoly, subs);
@@ -73,6 +71,8 @@ router.post('/getDonneDemande', async (req, res) => {
                 return item1;
             });
             console.log(resultFinal);
+
+            await insert_Historique(donnees_historique, resultFinal);
 
             return res.json(resultFinal);
         } else {

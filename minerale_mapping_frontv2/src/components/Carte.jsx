@@ -34,6 +34,7 @@ import Pdf from './component/PdfExport';
 
 
 import './../App.css';
+import axiosInstance from '../Lesmomdules/axiosInstance';
 
 
 function MapPage(props) {
@@ -150,27 +151,16 @@ function MapPage(props) {
       }
       handleOuvert();
       const donneesTableau = { 'nomPersonne': nomPersonne, 'selectPermis': selectPermis.id, 'listeCarre': listeCarre, 'choixSubs': choixSubs };
-      fetch('http://localhost:3000/getDonneDemande', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ 'donneesTableau': donneesTableau })
-      })
+      axiosInstance.post('http://localhost:3000/utilisateur/getDonneDemande', { donneesTableau })
         .then(response => {
-          if (!response.ok) {
-            throw new Error('Erreur lors de l\'envoi du tableau JSON');
-          }
-          return response.json();
-        })
-        .then(data => {
           handleFerme();
-          console.log(data);
-          setResultat(data);
+          console.log(response.data);
+          setResultat(response.data);
         })
         .catch(error => {
           console.error('Erreur :', error);
         });
+
     }
   }, [confirmation]);
   //// fin envoie de données vers la base 

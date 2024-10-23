@@ -72,8 +72,56 @@ async function insert_Historique(info, result_prob) {
 
 }
 
+async function get_historique() {
+    var requete = " select h.id as id, h.date as date, h.typepermis as typePermis ,t.libelle, h.utilisateur, u.nom ,u.prenom , h.demandeur as demandeur , r.resultat as prob, hr.id_historique , r1.resultat as probIndice, hr.substance as substance from historique h left join historique_result hr on h.id = hr.id_historique join resultat r on r.id = hr.id_result  join resultat r1 on r1.id = hr.id_result_indice join typepermis t on t.id = h.typepermis join utilisateurs u on u.id = h.utilisateur order by date desc;";
+    // console.log(requete);
+
+    return new Promise((resolve, reject) => {
+        pool.query(requete, (error, resultat) => {
+            if (error) {
+                reject('Erreur de la base de données');
+            }
+            else {
+                const historiques = Object.values(
+                    resultat.rows.reduce((acc, row) => {
+                        const {
+                            id, date, demandeur, typepermis,libelle,
+                            utilisateur, nom, prenom,
+                            id_historique, prob, probIndice, substance
+                        } = row;
+
+                        // Vérifier si l'historique existe déjà dans l'accumulateur
+                        if (!acc[id]) {
+                            acc[id] = {
+                                id,
+                                date,
+                                demandeur,
+                                typepermis,
+                                libelle,
+                                utilisateur,
+                                nom,
+                                prenom,
+                                results: [] // Initialisation du tableau des résultats
+                            };
+                        }
+
+                        // Ajouter le résultat associé si `id_historique` est présent
+                        if (id_historique) {
+                            acc[id].results.push({ id_historique, prob, probIndice, substance });
+                        }
+
+                        return acc;
+                    }, {})
+                );
+                console.log(historiques)
+                resolve(historiques);
+            }
+
+        })
+    })
+}
 
 module.exports = {
     insert_Historique,
-    get_sequence_historique
+    get_historique,
 };

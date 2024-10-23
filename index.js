@@ -23,6 +23,7 @@ const decoupe = require('./controllers/DecoupeController');
 const demande = require('./controllers/DemandeController');
 const carre = require('./controllers/CarreController');
 const utilisateur = require('./controllers/UtilisateurController');
+const historique = require('./controllers/historiqueController');
 
 // app.use(cors()); // Enable CORS for all routes
 app.use(cors({
@@ -80,6 +81,7 @@ app.use('/', decoupe);
 app.use('/', demande);
 app.use('/', carre);
 app.use('/', utilisateur);
+app.use('/', historique);
 
 //lancement du serveur
 const port = process.env.PORT || 3000;

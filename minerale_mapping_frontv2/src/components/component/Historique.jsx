@@ -4,14 +4,33 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
+import axiosInstance from '../../Lesmomdules/axiosInstance';
 
 import TableHistorique from './TableHistorique';
+import { useEffect } from 'react';
 
 export default function SelectOtherProps() {
     const [demandeur, setDemandeur] = React.useState('');
     const [permis, setPermis] = React.useState('');
     const [date, setDate] = React.useState('');
     const [user, setUser] = React.useState('');
+    const [historiques, setHistoriques]= React.useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axiosInstance.get('http://localhost:3000/admin/getHistoriques');
+                setHistoriques(response.data);
+            }
+            catch (error) {
+                console.error('Erreur lors de la requête');
+            }
+        }
+        fetchData();
+    }, []);
+    useEffect(()=>{
+        console.log(historiques)
+    },[historiques])
 
     const handleChange1 = (event) => {
         setDemandeur(event.target.value);
@@ -111,7 +130,7 @@ export default function SelectOtherProps() {
                     <MenuItem value={22}>Rakotoarimanana Jerry</MenuItem>
                 </Select>
             </FormControl>
-            <TableHistorique demandeur={demandeur} permis={permis} date={date} user={user} />
+            <TableHistorique demandeur={demandeur} permis={permis} date={date} user={user} historiques={historiques} />
         </div>
     );
 }

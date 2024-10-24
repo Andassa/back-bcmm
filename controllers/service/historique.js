@@ -7,14 +7,20 @@ async function get_sequence_historique() {
     var requete = "select nextval('seq_historique') as new_sequence_historique";
 
     return new Promise((resolve, reject) => {
-        pool.query(requete, (error, resultat) => {
-            if (error) {
-                reject('Erreur de la base de données');
-            }
-            else {
-                resolve(resultat.rows[0].new_sequence_historique);
-            }
-        })
+        try {
+            pool.query(requete, (error, resultat) => {
+                if (error) {
+                    console.error('erreur lors de get sequence 2');
+                    reject('erreur lors du get sequence 2');
+                }
+                else {
+                    resolve(resultat.rows[0].new_sequence_historique);
+                }
+            })
+        } catch (error) {
+            reject('erreur lors de get sequence 1')
+            console.error('erreur lors de get sequence 1');
+        }
     })
 }
 
@@ -23,14 +29,20 @@ async function insert_historique_detail(new_sequence_historique, info) {
     var requete = "insert into historique (id , demandeur, typepermis, utilisateur,carres) values ('" + new_sequence_historique + "','" + info.demandeur + "'," + info.typepermis + ",'" + info.idUtilisateur + "'," + info.carres + ")";
 
     return new Promise((resolve, reject) => {
-        pool.query(requete, (error, resultat) => {
-            if (error) {
-                reject('Erreur de la base de données');
-            }
-            else {
-                resolve('ok');
-            }
-        })
+        try {
+            pool.query(requete, (error, resultat) => {
+                if (error) {
+                    console.erreur('Erreur lors de l insertion dans l historique 2')
+                    reject('Erreur de la base de données');
+                }
+                else {
+                    resolve('ok');
+                }
+            })
+        } catch (error) {
+            console.erreur('Erreur lors de l insertion dans l historique 1')
+            throw(error)
+        }
     })
 }
 
@@ -39,14 +51,20 @@ async function insert_historique_result(idhistorique, result) {
     var requete = "insert into historique_result (id_historique, substance, id_result, id_result_indice) values ('" + idhistorique + "','" + result.subs + "'," + result.result + "," + result.probIndice + ")";
 
     return new Promise((resolve, reject) => {
-        pool.query(requete, (error, resultat) => {
-            if (error) {
-                reject('Erreur de la base de données');
-            }
-            else {
-                resolve('ok');
-            }
-        })
+        try {
+            pool.query(requete, (error, resultat) => {
+                if (error) {
+                    console.erreur('Erreur lors de l insertion dans l historique_result 2')
+                    reject('Erreur de la base de données');
+                }
+                else {
+                    resolve('ok');
+                }
+            })
+        } catch (error) {
+            console.erreur('Erreur lors de l insertion dans l historique_result 1')
+            throw error;
+        }
     })
 }
 

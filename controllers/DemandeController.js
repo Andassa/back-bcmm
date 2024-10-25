@@ -72,7 +72,7 @@ router.post('/utilisateur/getDonneDemande', async (req, res) => {
             });
             console.log(resultFinal);
 
-            await insert_Historique(donnees_historique, resultFinal);
+            // await insert_Historique(donnees_historique, resultFinal);
 
             return res.json(resultFinal);
         } else {

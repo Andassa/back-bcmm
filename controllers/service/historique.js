@@ -27,6 +27,7 @@ async function get_sequence_historique() {
 //une fonction qui insere l'historique en générale 
 async function insert_historique_detail(new_sequence_historique, info) {
     var requete = "insert into historique (id , demandeur, typepermis, utilisateur,carres) values ('" + new_sequence_historique + "','" + info.demandeur + "'," + info.typepermis + ",'" + info.idUtilisateur + "'," + info.carres + ")";
+    console.log(requete);
 
     return new Promise((resolve, reject) => {
         try {
